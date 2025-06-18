@@ -1,7 +1,7 @@
 /* eslint-disable node/no-process-env */
 import type { ZodObject, ZodRawShape } from "zod/v4";
 
-import { ZodError } from "zod";
+import { z, ZodError } from "zod/v4";
 
 export default function tryParseEnv<T extends ZodRawShape>(EnvSchema: ZodObject<T>, buildEnv: Record<string, string | undefined> = process.env) {
   try {
@@ -9,18 +9,13 @@ export default function tryParseEnv<T extends ZodRawShape>(EnvSchema: ZodObject<
   }
   catch (error) {
     if (error instanceof ZodError) {
-      console.log("Processing ZodError with issues:", error.issues); // Add this
-      let message = "Missing required values in .env:\n";
-      error.issues.forEach((issue) => {
-        message += `${issue.path[0]}\n`;
-      });
-      const e = new Error(message);
-      e.stack = "";
-      console.log("Throwing custom error:", message); // Add this
-      throw e;
+      const errorTree = z.flattenError(error);
+      console.error("Environment variable validation failed:", errorTree);
+      console.error("Please ensure all required environment variables are set correctly.");
+      process.exit(1);
     }
     else {
-      console.error(error);
+      console.error("An unexpected error occurred while parsing environment variables:", error);
     }
   }
 }
