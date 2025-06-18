@@ -16,7 +16,7 @@ export const locationLog = sqliteTable("locationLog", {
   endedAt: int().notNull(),
   lat: real().notNull(),
   long: real().notNull(),
-  locationId: int().notNull().references(() => location.id, { onDelete: "cascade" }),
+  locationId: text().notNull().references(() => location.id, { onDelete: "cascade" }),
   // userId: text().notNull().references(() => user.id, { onDelete: "cascade" }),
   createdAt: int().notNull().$default(() => Date.now()),
   updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
@@ -60,5 +60,5 @@ export const InsertLocationLogSchema = createInsertSchema(locationLog, {
   }
 });
 
-export type T_LocationLog = typeof locationLog.$inferSelect;
+export type T_SelectLocationLog = typeof locationLog.$inferSelect;
 export type T_InsertLocationLog = z.infer<typeof InsertLocationLogSchema>;
