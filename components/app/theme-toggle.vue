@@ -30,7 +30,3 @@ const isDark = computed({
     />
   </label>
 </template>
-
-<style scoped>
-
-</style>
