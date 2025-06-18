@@ -5,9 +5,18 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   devtools: { enabled: true },
 
-  modules: ["@nuxt/eslint", "@nuxt/icon", "@pinia/nuxt"],
+  modules: [
+    "@nuxt/eslint",
+    "@nuxt/icon",
+    "@pinia/nuxt",
+    "@nuxtjs/color-mode",
+  ],
 
   css: ["~/assets/css/main.css"],
+
+  colorMode: {
+    dataValue: "theme",
+  },
 
   eslint: {
     config: {
