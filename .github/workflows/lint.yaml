@@ -13,13 +13,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - run: pnpm install
-      - run: pnpm lint
+          bun-version: latest
+      - run: bun install
+      - run: bun lint
