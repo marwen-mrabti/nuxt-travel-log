@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div class="relative flex w-full max-w-screen min-h-screen flex-col">
     <AppNavBar />
     <main class="flex-1 flex flex-col">
       <slot />
