@@ -7,6 +7,10 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   devtools: { enabled: true },
 
+  alias: {
+    "~/*": "./*",
+    "@/*": "./*",
+  },
   modules: [
     "@nuxt/eslint",
     "@nuxt/icon",
