@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@pinia/nuxt",
     "@nuxtjs/color-mode",
+    "nuxt-csurf",
   ],
 
   css: ["~/assets/css/main.css"],
