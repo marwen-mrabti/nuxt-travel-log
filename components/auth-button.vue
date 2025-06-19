@@ -39,7 +39,7 @@ const { user, pending, signIn } = authStore;
     v-else
     :disabled="pending"
     class="btn btn-accent"
-    @click="signIn()"
+    @click="signIn"
   >
     Sign In With Github
     <span v-if="pending" class="loading loading-spinner loading-md" />
