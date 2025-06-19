@@ -45,3 +45,5 @@ export const verification = sqliteTable("verification", {
   createdAt: int().notNull().$default(() => Date.now()),
   updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
 });
+
+export type T_User = typeof user.$inferSelect;
