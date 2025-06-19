@@ -10,10 +10,11 @@ export const useAuthStore = defineStore("useAuthStore", () => {
   async function init() {
     const data = await authClient.useSession(useFetch);
     session.value = data;
+    return data;
   }
 
   const user = computed<T_User>(() => session.value?.data?.user);
-  const pending = computed<boolean>(() => session.value?.isPending);
+  const pending = computed<boolean>(() => session.value?.isPending || session.value.isRefreshing);
 
   async function signIn() {
     const { csrf } = useCsrf();
@@ -38,8 +39,7 @@ export const useAuthStore = defineStore("useAuthStore", () => {
         headers,
       },
     });
-    await init();
-    navigateTo("/");
+    return navigateTo("/", { external: true });
   }
 
   return { init, user, pending, signIn, signOut };
