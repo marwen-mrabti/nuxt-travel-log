@@ -14,7 +14,7 @@ export const useAuthStore = defineStore("useAuthStore", () => {
   }
 
   const user = computed<T_User>(() => session.value?.data?.user);
-  const pending = computed<boolean>(() => session.value?.isPending || session.value.isRefreshing);
+  const pending = computed<boolean>(() => session.value?.isPending);
 
   async function signIn() {
     const { csrf } = useCsrf();
