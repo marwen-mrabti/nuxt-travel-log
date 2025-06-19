@@ -10,9 +10,7 @@ export default function tryParseEnv<T extends ZodRawShape>(EnvSchema: ZodObject<
   catch (error) {
     if (error instanceof ZodError) {
       const errorTree = z.flattenError(error);
-      console.error("Environment variable validation failed:", errorTree);
-      console.error("Please ensure all required environment variables are set correctly.");
-      process.exit(1);
+      throw new Error(`Environment variable validation failed: ${JSON.stringify(errorTree, null, 2)}`);
     }
     else {
       console.error("An unexpected error occurred while parsing environment variables:", error);
