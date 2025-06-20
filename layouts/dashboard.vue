@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-
-</script>
-
 <template>
   <div class="grid grid-cols-[auto_1fr] gap-2 w-full flex-1">
     <Sidebar />
@@ -10,7 +6,3 @@
     </main>
   </div>
 </template>
-
-<style scoped>
-
-</style>

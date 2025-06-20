@@ -12,7 +12,7 @@ function toggleSideBar() {
 </script>
 
 <template>
-  <aside class="bg-base-200 overflow-x-hidden overflow-y-auto flex flex-col items-start gap-6 transition-all duration-100 ease-in-out" :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }">
+  <aside class="bg-base-200 relative flex flex-col items-start gap-6 transition-all duration-100 ease-in-out" :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }">
     <button
       class="flex w-full hover:cursor-pointer hover:bg-base-200 p-2 "
       :class="{ 'justify-center': !isSidebarOpen, 'justify-end': isSidebarOpen }"
@@ -30,7 +30,7 @@ function toggleSideBar() {
       />
     </button>
 
-    <ul class="flex flex-col items-start gap-4 w-full " :class="{ 'items-center': !isSidebarOpen, 'items-start': isSidebarOpen }">
+    <ul class="flex flex-col items-start gap-4 w-full" :class="{ 'items-center': !isSidebarOpen, 'items-start': isSidebarOpen }">
       <SidebarButton
         label="Locations"
         icon="tabler:map"
