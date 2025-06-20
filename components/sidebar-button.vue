@@ -37,10 +37,10 @@ const route = useRoute();
 
   <style scoped>
     .grow-enter-active {
-  animation: grow 0.2s;
+  animation: grow 0.05s;
 }
 .grow-leave-active {
-  animation: grow 0.2s reverse;
+  animation: grow 0.05s reverse;
 }
 @keyframes grow {
   0% {

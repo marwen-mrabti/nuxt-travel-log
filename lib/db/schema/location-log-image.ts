@@ -1,4 +1,4 @@
-import type { z } from "zod/v4";
+import type { z } from "zod";
 
 import { relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
@@ -21,18 +21,18 @@ export const locationLogImagesRelations = relations(locationLogImage, ({ one }) 
     fields: [locationLogImage.locationLogId],
     references: [locationLog.id],
   }),
-  // user: one(user, {
-  //   fields: [locationLogImage.userId],
-  //   references: [user.id],
-  // }),
+  user: one(user, {
+    fields: [locationLogImage.userId],
+    references: [user.id],
+  }),
 }));
 
 export const InsertLocationLogImageSchema = createInsertSchema(locationLogImage, {
-  key: field => field.regex(/^\d+\/\d+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.jpg$/, "Invalid key"),
+  key: (field: z.ZodString) => field.regex(/^\d+\/\d+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.jpg$/, "Invalid key"),
 }).omit({
   id: true,
   locationLogId: true,
-  // userId: true,
+  userId: true,
   createdAt: true,
   updatedAt: true,
 });
