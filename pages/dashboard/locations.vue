@@ -1,6 +1,5 @@
 <script setup>
-definePageMeta({
-
+useHead({
   title: "Locations",
 });
 </script>

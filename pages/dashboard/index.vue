@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-definePageMeta({
+useHead({
   title: "Dashboard",
 });
 </script>

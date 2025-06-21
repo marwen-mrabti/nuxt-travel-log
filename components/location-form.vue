@@ -11,27 +11,36 @@ const validationSchema = toTypedSchema(InsertLocationSchema as unknown as z.ZodO
 const loading = ref(false);
 const submitted = ref(false);
 const submitError = ref("");
+const { $csrfFetch } = useNuxtApp();
 
-const { handleSubmit, errors, resetForm } = useForm<T_InsertLocation>({
+const { handleSubmit, errors, setErrors, resetForm } = useForm<T_InsertLocation>({
   validationSchema,
 });
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true;
+  submitted.value = false;
+  submitError.value = "";
+
   try {
-    const result = await $fetch("/api/location", {
-      method: "POST",
-      body: {
-        ...values,
-      },
+    await ($csrfFetch as typeof $fetch)("/api/locations", {
+      method: "post",
+      body: values,
     });
-    console.log("Location added:", result);
+
     submitted.value = true;
     submitError.value = "";
+    setErrors({});
     resetForm();
+
+    return navigateTo(`/dashboard`);
   }
   catch (e) {
     const error = e as FetchError;
+
+    if (error.data?.data) {
+      setErrors(error.data?.data);
+    }
     submitError.value = error.statusMessage || "Unknown error has occurred";
     submitted.value = false;
   }
@@ -48,6 +57,15 @@ function onCancel() {
 </script>
 
 <template>
+  <div class="flex flex-col gap-4">
+    <p v-if="submitError" class="text-error">
+      {{ submitError }}
+    </p>
+    <p v-else-if="submitted" class="text-success">
+      Location added successfully!
+    </p>
+  </div>
+
   <form
     class="flex flex-col gap-2 w-full max-w-[350px] mx-auto"
     @submit.prevent="onSubmit"

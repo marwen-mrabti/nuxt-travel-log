@@ -1,11 +1,11 @@
 <script setup>
-definePageMeta({
-  title: "add location",
+useHead({
+  title: "Add Location",
 });
 </script>
 
 <template>
-  <main class="container max-w-md mx-auto p-4 space-y-4">
+  <main class="container max-w-md mx-auto p-4 space-y-2">
     <div class="my-4 space-y-2">
       <h1 class="text-2xl font-bold">
         Add Location
