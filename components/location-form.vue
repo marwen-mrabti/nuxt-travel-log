@@ -12,8 +12,9 @@ const loading = ref(false);
 const submitted = ref(false);
 const submitError = ref("");
 const { $csrfFetch } = useNuxtApp();
+const router = useRouter();
 
-const { handleSubmit, errors, setErrors, resetForm } = useForm<T_InsertLocation>({
+const { handleSubmit, errors, setErrors, resetForm, meta } = useForm<T_InsertLocation>({
   validationSchema,
 });
 
@@ -21,7 +22,6 @@ const onSubmit = handleSubmit(async (values) => {
   loading.value = true;
   submitted.value = false;
   submitError.value = "";
-
   try {
     await ($csrfFetch as typeof $fetch)("/api/locations", {
       method: "post",
@@ -50,10 +50,28 @@ const onSubmit = handleSubmit(async (values) => {
 });
 
 function onCancel() {
-  resetForm();
-  submitted.value = false;
-  submitError.value = "";
+  if (meta.value.dirty) {
+    // eslint-disable-next-line no-alert
+    const confirmCancel = confirm("You have unsaved changes. Are you sure you want to cancel? Your changes will not be saved.");
+    if (confirmCancel) {
+      resetForm();
+      submitted.value = false;
+      submitError.value = "";
+      router.back();
+    }
+  }
 }
+
+onBeforeRouteLeave(() => {
+  if (meta.value.dirty) {
+    // eslint-disable-next-line no-alert
+    const confirmLeave = confirm("You have unsaved changes. Are you sure you want to leave? Your changes will not be saved.");
+    if (!confirmLeave) {
+      return false;
+    }
+  }
+  return true;
+});
 </script>
 
 <template>
@@ -99,7 +117,7 @@ function onCancel() {
       <button
         type="button"
         class="btn btn-outline"
-        :disabled="loading"
+        :disabled="loading "
         aria-label="Cancel"
         @click="onCancel"
       >
@@ -109,7 +127,7 @@ function onCancel() {
       <button
         type="submit"
         class="btn btn-primary flex items-center gap-2"
-        :disabled="loading || !!errors.name || !!errors.description || !!errors.lat || !!errors.long"
+        :disabled="loading || !meta.dirty || !!errors.name || !!errors.description || !!errors.lat || !!errors.long"
       >
         <span>
           {{ submitted ? "Submitted" : "Add Location" }}
