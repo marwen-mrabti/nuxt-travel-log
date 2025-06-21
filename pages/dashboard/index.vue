@@ -1,15 +1,11 @@
-<script lang="ts" setup>
+<script setup>
 useHead({
-  title: "Dashboard",
+  title: "Locations",
 });
 </script>
 
 <template>
-  <div class="text-3xl ">
-    main dashboard
+  <div>
+    <h1>locations</h1>
   </div>
 </template>
-
-<style scoped>
-
-</style>

@@ -34,7 +34,7 @@ function toggleSideBar() {
       <SidebarButton
         label="Locations"
         icon="tabler:map"
-        to="/dashboard/locations"
+        to="/dashboard"
         :show-label="isSidebarOpen"
       />
 
