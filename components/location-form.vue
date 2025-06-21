@@ -60,6 +60,7 @@ function onCancel() {
       router.back();
     }
   }
+  router.back();
 }
 
 onBeforeRouteLeave(() => {
