@@ -4,8 +4,7 @@ import type { RouteLocationRaw } from "vue-router";
 const props = defineProps<{
   label: string;
   icon: string;
-  href?: string;
-  to?: RouteLocationRaw;
+  to: RouteLocationRaw;
   showLabel: boolean;
   iconColor?: "text-accent" | "text-primary" | "text-secondary";
 }>();
@@ -20,8 +19,8 @@ const route = useRoute();
     :class="{ tooltip: !showLabel }"
   >
     <NuxtLink
-      :to="props.href || props.to"
-      :class="{ 'bg-base-200': route.path === props.href, 'justify-center': !showLabel, 'justify-start': showLabel }"
+      :to="props.to"
+      :class="{ 'bg-base-300': route.path === props.to, 'justify-center': !showLabel, 'justify-start': showLabel }"
       class="flex items-center gap-2 p-2 hover:bg-base-300 hover:cursor-pointer flex-nowrap"
     >
       <Icon
@@ -38,10 +37,10 @@ const route = useRoute();
 
   <style scoped>
     .grow-enter-active {
-  animation: grow 0.2s;
+  animation: grow 0.05s;
 }
 .grow-leave-active {
-  animation: grow 0.2s reverse;
+  animation: grow 0.05s reverse;
 }
 @keyframes grow {
   0% {

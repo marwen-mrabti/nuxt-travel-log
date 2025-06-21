@@ -1,5 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 
+import "./lib/env";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
@@ -19,6 +21,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/color-mode",
     "nuxt-csurf",
+    "@vee-validate/nuxt",
   ],
 
   css: ["~/assets/css/main.css"],

@@ -12,7 +12,7 @@ function toggleSideBar() {
 </script>
 
 <template>
-  <aside class="bg-base-200 overflow-x-hidden overflow-y-auto flex flex-col items-start gap-6 transition-all duration-100 ease-in-out" :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }">
+  <aside class="bg-base-200 overflow-y-auto flex flex-col items-start gap-6 transition-all duration-300 ease-in-out" :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }">
     <button
       class="flex w-full hover:cursor-pointer hover:bg-base-200 p-2 "
       :class="{ 'justify-center': !isSidebarOpen, 'justify-end': isSidebarOpen }"
@@ -21,16 +21,16 @@ function toggleSideBar() {
       <Icon
         v-if="isSidebarOpen"
         name="tabler:chevron-left"
-        size="24"
+        size="32"
       />
       <Icon
         v-else
         name="tabler:chevron-right"
-        size="24"
+        size="32"
       />
     </button>
 
-    <ul class="flex flex-col items-start gap-4 w-full " :class="{ 'items-center': !isSidebarOpen, 'items-start': isSidebarOpen }">
+    <ul class="flex flex-col items-start gap-4 w-full" :class="{ 'items-center': !isSidebarOpen, 'items-start': isSidebarOpen }">
       <SidebarButton
         label="Locations"
         icon="tabler:map"
@@ -40,7 +40,7 @@ function toggleSideBar() {
 
       <SidebarButton
         label="Add Location"
-        icon="tabler:plus"
+        icon="tabler:circle-plus-filled"
         to="/dashboard/add"
         :show-label="isSidebarOpen"
       />

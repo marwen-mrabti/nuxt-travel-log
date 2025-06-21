@@ -1,5 +1,3 @@
-import type { z } from "zod/v4";
-
 import { relations } from "drizzle-orm";
 import { int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -7,12 +5,11 @@ import { createInsertSchema } from "drizzle-zod";
 import { user } from "~/lib/db/schema/auth";
 import { location } from "~/lib/db/schema/location";
 import { locationLogImage } from "~/lib/db/schema/location-log-image";
-import { DateSchema, DescriptionSchema, LatSchema, LongSchema, NameSchema } from "~/lib/zod-schemas";
 
 export const locationLog = sqliteTable("locationLog", {
   id: text().primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text().notNull(),
-  description: text(),
+  description: text().notNull(),
   startedAt: int().notNull(),
   endedAt: int().notNull(),
   lat: real().notNull(),
@@ -32,12 +29,14 @@ export const locationLogRelations = relations(locationLog, ({ one, many }) => ({
 }));
 
 export const InsertLocationLogSchema = createInsertSchema(locationLog, {
-  name: NameSchema,
-  description: DescriptionSchema,
-  lat: LatSchema,
-  long: LongSchema,
-  startedAt: DateSchema,
-  endedAt: DateSchema,
+  name: schema => schema.min(3, "Please provide a valid name of the location").max(100, "Name must be less than 100 characters").refine(val => val.trim() !== "", {
+    message: "Name must not be empty",
+  }),
+  description: schema => schema.min(10, "Description is required").refine(val => val.trim() !== "", {
+    message: "Description must not be empty",
+  }),
+  lat: schema => schema.min(-90, "Latitude must be between -90 and 90").max(90, "Latitude must be between -90 and 90"),
+  long: schema => schema.min(-180, "Longitude must be between -180 and 180").max(180, "Longitude must be between -180 and 180"),
 }).omit({
   id: true,
   userId: true,
@@ -62,4 +61,4 @@ export const InsertLocationLogSchema = createInsertSchema(locationLog, {
 });
 
 export type T_SelectLocationLog = typeof locationLog.$inferSelect;
-export type T_InsertLocationLog = z.infer<typeof InsertLocationLogSchema>;
+export type T_InsertLocationLog = Omit<T_SelectLocationLog, "id" | "userId" | "locationId" | "createdAt" | "updatedAt">;
