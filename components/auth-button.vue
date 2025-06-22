@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const authStore = useAuthStore();
-const { user, pending, signIn } = authStore;
+const { user, pending } = storeToRefs(authStore);
 </script>
 
 <template>
@@ -39,7 +39,7 @@ const { user, pending, signIn } = authStore;
     v-else
     :disabled="pending"
     class="btn btn-accent"
-    @click="signIn"
+    @click="authStore.signIn"
   >
     Sign In With Github
     <span v-if="pending" class="loading loading-spinner loading-md" />

@@ -4,7 +4,7 @@ import type { T_User } from "~/lib/db/schema";
 
 type AuthenticatedEvent = H3Event & {
   context: H3EventContext & {
-    user: T_User | null;
+    user: T_User;
   };
 };
 

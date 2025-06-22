@@ -2,7 +2,7 @@ import type { DrizzleError } from "drizzle-orm";
 
 import slugify from "slug";
 
-import { findUniqueSlug, getLocationByNameAndUserId, insertLocation } from "~/lib/db/queries/location";
+import { findUniqueSlug, getLocationByNameAndUserId, insertLocation } from "~/lib/db/queries/locations-queries";
 import { InsertLocationSchema } from "~/lib/db/schema";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 import sendZodError from "~/utils/send-zod-error";
