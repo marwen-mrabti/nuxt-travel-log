@@ -39,7 +39,7 @@ export const useAuthStore = defineStore("useAuthStore", () => {
         headers,
       },
     });
-    return navigateTo("/", { external: true });
+    return navigateTo("/");
   }
 
   return { init, user, pending, signIn, signOut };
