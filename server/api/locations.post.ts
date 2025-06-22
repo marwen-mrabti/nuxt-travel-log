@@ -22,10 +22,10 @@ export default defineAuthenticatedEventHandler(async (event) => {
   }
   const existingLocation = await getLocationByNameAndUserId(result.data.name, userId);
   if (existingLocation) {
-    return sendError(event, createError({
+    throw createError({
       statusCode: 409,
       statusMessage: "Location with this name already exists.",
-    }));
+    });
   }
   const slug = await findUniqueSlug(slugify(result.data.name));
 
