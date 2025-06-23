@@ -4,13 +4,8 @@ useHead({
 });
 
 const locationStore = useLocationStore();
-const { locations, locationsError: error, locationsStatus: status } = storeToRefs(locationStore);
-const loading = computed(() => status.value === "pending");
+const { locations, locationsError: error, locationsPending: loading } = storeToRefs(locationStore);
 const errorMessage = computed(() => error.value?.statusMessage);
-
-onMounted(() => {
-  locationStore.refreshLocations();
-});
 </script>
 
 <template>
