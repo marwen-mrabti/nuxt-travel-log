@@ -1,18 +1,12 @@
 <script setup lang='ts'>
 const route = useRoute();
-
 useHead({
   title: computed(() => `location: ${route.params.slug}`),
 });
 
 const locationStore = useLocationStore();
-const { location, locationError: error, locationStatus: status } = storeToRefs(locationStore);
-const loading = computed(() => status.value === "pending");
+const { location, locationError: error, locationPending: loading } = storeToRefs(locationStore);
 const errorMessage = computed(() => error.value?.statusMessage);
-
-onMounted(() => {
-  locationStore.refreshLocation();
-});
 </script>
 
 <template>
