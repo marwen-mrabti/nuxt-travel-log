@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const isSidebarOpen = ref(true);
 
+const locationStore = useLocationStore();
+
+const { locations, locationsStatus: status } = storeToRefs(locationStore);
+const loading = computed(() => status.value === "pending");
+
 onMounted(() => {
   isSidebarOpen.value = localStorage.getItem("isSidebarOpen") === "true";
 });
@@ -45,8 +50,22 @@ function toggleSideBar() {
         :show-label="isSidebarOpen"
       />
 
-      <div class="divider mx-2 -my-1" />
+      <div v-show="loading || locations?.length" class="divider mx-2 -my-1" />
+      <div v-if="loading" class="w-full flex justify-center">
+        <span class="loading loading-bars loading-xs" />
+      </div>
+      <ul v-else-if="locations?.length" class="w-full flex flex-col">
+        <SidebarButton
+          v-for="location in locations"
+          :key="location.id"
+          :label="location.name"
+          icon="tabler:map-pin"
+          :to="`/dashboard/location/${location.slug}`"
+          :show-label="isSidebarOpen"
+        />
+      </ul>
 
+      <div class="divider mx-2 -my-1" />
       <SidebarButton
         label="Sign Out"
         icon="tabler:logout-2"

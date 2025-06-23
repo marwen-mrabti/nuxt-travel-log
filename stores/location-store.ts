@@ -2,11 +2,12 @@ import { defineStore } from "pinia";
 
 import type { T_SelectLocation } from "~/lib/db/schema";
 
-export const useLocationStore = defineStore("useLocationStore", () => {
+export const useLocationStore = defineStore("location-store", () => {
   const route = useRoute();
 
   const { data: locations, status: locationsStatus, error: locationsError, refresh: refreshLocations } = useFetch<T_SelectLocation[]>("/api/locations", {
     method: "GET",
+    key: "locations",
     lazy: true,
   });
 
@@ -15,6 +16,7 @@ export const useLocationStore = defineStore("useLocationStore", () => {
 
   const { data: location, status: locationStatus, error: locationError, refresh: refreshLocation } = useFetch<T_SelectLocation>(locationUrlWithSlug, {
     method: "GET",
+    key: `location-${slug.value}`,
     lazy: true,
     immediate: false,
     watch: [slug],
