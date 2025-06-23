@@ -27,7 +27,7 @@ export const useLocationStore = defineStore("location-store", () => {
   const { data: location, error: locationError, status: locationStatus, isPending: locationPending } = useQuery<T_SelectLocation, FetchError>({
     queryKey: ["location", slug],
     queryFn: getLocationBySlug,
-    enabled: !!slug.value,
+    enabled: !!slug,
   });
 
   // insert location in the database
