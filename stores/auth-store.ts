@@ -4,7 +4,7 @@ import type { T_User } from "~/lib/db/schema";
 
 import { authClient } from "~/lib/auth-client";
 
-export const useAuthStore = defineStore("useAuthStore", () => {
+export const useAuthStore = defineStore("auth-store", () => {
   const session = ref<Awaited<ReturnType<typeof authClient.getSession>> | null>(null);
 
   async function init() {

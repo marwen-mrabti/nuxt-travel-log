@@ -4,7 +4,10 @@ useHead({
 });
 
 const locationStore = useLocationStore();
-const { locations, locationsError, locationsStatus } = storeToRefs(locationStore);
+const { locations, locationsError: error, locationsStatus: status } = storeToRefs(locationStore);
+const loading = computed(() => status.value === "pending");
+const errorMessage = computed(() => error.value?.statusMessage);
+
 onMounted(() => {
   locationStore.refreshLocations();
 });
@@ -15,13 +18,16 @@ onMounted(() => {
     <h2 class="text-2xl">
       Locations
     </h2>
-    <LocationsLoadingSkeleton v-if="locationsStatus === 'pending'" />
-    <div v-else-if="locationsError" class="text-center">
+    <LocationsLoadingSkeleton v-if="loading" />
+    <div v-else-if="errorMessage" class="text-center">
       <p class="text-red-500">
-        Error loading locations: {{ locationsError.statusMessage }}
+        failed to fetch the locations: {{ errorMessage }}
       </p>
     </div>
-    <ul v-else-if="locations && locations.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <ul
+      v-else-if="locations && locations.length > 0"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+    >
       <li v-for="location in locations" :key="location.id">
         <LocationCard :location="location" />
       </li>

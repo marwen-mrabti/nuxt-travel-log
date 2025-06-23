@@ -11,14 +11,14 @@ const loading = computed(() => status.value === "pending");
 const errorMessage = computed(() => error.value?.statusMessage);
 
 onMounted(() => {
-  locationStore.refreshLocations();
+  locationStore.refreshLocation();
 });
 </script>
 
 <template>
   <div>
     <h1>location details</h1>
-    <div v-if="loading" class="text-center">
+    <div v-if="loading" class="flex flex-col items-center gap-2 w-full">
       <p>Loading location details...</p>
       <span class="loading loading-dots loading-xl" />
     </div>

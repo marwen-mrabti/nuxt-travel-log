@@ -22,6 +22,7 @@ const route = useRoute();
       :to="props.to"
       :class="{ 'bg-base-300': route.path === props.to, 'justify-center': !showLabel, 'justify-start': showLabel }"
       class="flex items-center gap-2 p-2 hover:bg-base-300 hover:cursor-pointer flex-nowrap"
+      prefetch-on="interaction"
     >
       <Icon
         :name="props.icon"
