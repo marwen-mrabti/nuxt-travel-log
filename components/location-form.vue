@@ -2,61 +2,48 @@
 import type { FetchError } from "ofetch";
 import type { z } from "zod";
 
+import { useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 
 import { InsertLocationSchema, type T_InsertLocation } from "~/lib/db/schema";
 
 const validationSchema = toTypedSchema(InsertLocationSchema as unknown as z.ZodObject<any>);
 
-const loading = ref(false);
-const submitted = ref(false);
-const submitError = ref("");
-const { $csrfFetch } = useNuxtApp();
 const router = useRouter();
+const queryClient = useQueryClient();
 
 const { handleSubmit, errors, setErrors, resetForm, meta } = useForm<T_InsertLocation>({
   validationSchema,
 });
 
+const locationStore = useLocationStore();
+const { insertLocationError: error, insertLocationIsError: isError, insertLocationIsPending: isPending, insertLocationIsSuccess: isSubmitted } = storeToRefs(locationStore);
+
 const onSubmit = handleSubmit(async (values) => {
-  loading.value = true;
-  submitted.value = false;
-  submitError.value = "";
-  try {
-    await ($csrfFetch as typeof $fetch)("/api/locations", {
-      method: "post",
-      body: values,
-    });
-
-    submitted.value = true;
-    submitError.value = "";
-    setErrors({});
-    resetForm();
-
-    return navigateTo(`/dashboard`);
-  }
-  catch (e) {
-    const error = e as FetchError;
-
-    if (error.data?.data) {
-      setErrors(error.data?.data);
-    }
-    submitError.value = error?.data.statusMessage || error.statusMessage || "Unknown error has occurred";
-    submitted.value = false;
-  }
-  finally {
-    loading.value = false;
-  }
+  await locationStore.insertLocationAsync(values, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      setErrors({});
+      resetForm();
+      locationStore.resetInsertLocation();
+      return navigateTo("/dashboard");
+    },
+    onError: (error: FetchError) => {
+      if (error.data?.data) {
+        setErrors(error.data?.data);
+      }
+    },
+  });
 });
 
 function onCancel() {
-  if (!submitted.value && meta.value.dirty) {
+  if (!isSubmitted.value && meta.value.dirty) {
     // eslint-disable-next-line no-alert
     const confirmCancel = confirm("You have unsaved changes. Are you sure you want to cancel? Your changes will not be saved.");
     if (confirmCancel) {
+      locationStore.resetInsertLocation();
+      setErrors({});
       resetForm();
-      submitted.value = false;
-      submitError.value = "";
       router.back();
     }
   }
@@ -64,7 +51,7 @@ function onCancel() {
 }
 
 onBeforeRouteLeave(() => {
-  if (!submitted.value && meta.value.dirty) {
+  if (!isSubmitted.value && meta.value.dirty) {
     // eslint-disable-next-line no-alert
     const confirmLeave = confirm("You have unsaved changes. Are you sure you want to leave? Your changes will not be saved.");
     if (!confirmLeave) {
@@ -77,15 +64,15 @@ onBeforeRouteLeave(() => {
 
 <template>
   <div
-    v-if="submitError"
+    v-if="isError"
     role="alert"
     class="alert alert-error max-w-[350px] mx-auto"
   >
     <Icon name="tabler:circle-x-filled" size="24" />
-    <span>{{ submitError }}</span>
+    <span>{{ error?.statusMessage || "An unknown error occurred." }}</span>
   </div>
   <div
-    v-else-if="submitted"
+    v-else-if="isSubmitted"
     role="alert"
     class="alert alert-success max-w-[350px] mx-auto"
   >
@@ -102,32 +89,32 @@ onBeforeRouteLeave(() => {
       label="Name"
       name="name"
       :error="errors.name"
-      :disabled="loading"
+      :disabled="isPending"
     />
     <AppFormField
       label="Description"
       name="description"
       :error="errors.description"
       type="textarea"
-      :disabled="loading"
+      :disabled="isPending"
     />
     <AppFormField
       label="Latitude"
       name="lat"
       :error="errors.lat"
-      :disabled="loading"
+      :disabled="isPending"
     />
     <AppFormField
       label="Longitude"
       name="long"
       :error="errors.long"
-      :disabled="loading"
+      :disabled="isPending"
     />
     <div class="flex items-center justify-end gap-2 ">
       <button
         type="button"
         class="btn btn-outline"
-        :disabled="loading"
+        :disabled="isPending"
         aria-label="Cancel"
         @click="onCancel"
       >
@@ -137,12 +124,12 @@ onBeforeRouteLeave(() => {
       <button
         type="submit"
         class="btn btn-primary flex items-center gap-2"
-        :disabled="loading || !meta.dirty || !!errors.name || !!errors.description || !!errors.lat || !!errors.long"
+        :disabled="isPending || !meta.dirty || !!errors.name || !!errors.description || !!errors.lat || !!errors.long"
       >
         <span>
-          {{ loading ? "Processing" : "Add Location" }}
+          {{ isPending ? "Processing" : "Add Location" }}
         </span>
-        <span v-if="loading" class="loading loading-spinner loading-md" />
+        <span v-if="isPending" class="loading loading-spinner loading-md" />
         <Icon
           v-else
           name="tabler:circle-plus-filled"
