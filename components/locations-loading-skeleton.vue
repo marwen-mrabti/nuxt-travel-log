@@ -5,14 +5,14 @@
         <div class="card-body">
           <!-- Title skeleton -->
           <div class="card-title">
-            <div class="h-6 bg-gray-300 rounded animate-pulse w-3/4" />
+            <div class="h-6 skeleton w-3/4" />
           </div>
 
           <!-- Description skeleton - multiple lines -->
           <div class="space-y-2">
-            <div class="h-3 bg-gray-300 rounded animate-pulse w-full" />
-            <div class="h-3 bg-gray-300 rounded animate-pulse w-5/6" />
-            <div class="h-3 bg-gray-300 rounded animate-pulse w-2/3" />
+            <div class="h-3 skeleton w-full" />
+            <div class="h-3 skeleton w-5/6" />
+            <div class="h-3 skeleton w-2/3" />
           </div>
         </div>
       </div>

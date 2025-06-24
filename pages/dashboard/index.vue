@@ -3,8 +3,7 @@ useHead({
   title: "Locations",
 });
 
-const locationStore = useLocationStore();
-const { locations, locationsError: error, locationsPending: loading } = storeToRefs(locationStore);
+const { data: locations, error, isPending } = useLocations();
 const errorMessage = computed(() => error.value?.statusMessage);
 </script>
 
@@ -13,7 +12,7 @@ const errorMessage = computed(() => error.value?.statusMessage);
     <h2 class="text-2xl">
       Locations
     </h2>
-    <LocationsLoadingSkeleton v-if="loading" />
+    <LocationsLoadingSkeleton v-if="isPending" />
     <div v-else-if="errorMessage" class="text-center">
       <p class="text-red-500">
         failed to fetch the locations: {{ errorMessage }}

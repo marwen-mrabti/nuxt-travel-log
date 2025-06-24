@@ -11,10 +11,11 @@ const { location } = toRefs(props);
   <NuxtLink
     :to="{ name: 'dashboard-location-slug', params: { slug: location.slug } }"
     class="card card-compact bg-base-200 min-h-35 h-fit  min-w-fit w-full shrink-0 cursor-pointer hover:bg-base-100 border-2 hover:border-accent transition-all duration-200 ease-linear shadow-2xl"
+    prefetch-on="interaction"
   >
     <div class="card-body">
       <slot name="top" />
-      <h2 class="card-title">
+      <h2 class="card-title capitalize">
         {{ location.name }}
       </h2>
       <p>{{ location.description }}</p>

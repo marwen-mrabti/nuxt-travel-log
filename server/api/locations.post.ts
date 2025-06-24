@@ -20,7 +20,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
       statusMessage: "Unauthorized",
     }));
   }
-  const existingLocation = await getLocationByNameAndUserId(result.data.name, userId);
+  const existingLocation = await getLocationByNameAndUserId(result.data.name.toLowerCase(), userId);
   if (existingLocation) {
     throw createError({
       statusCode: 409,
@@ -32,6 +32,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
   try {
     const location = await insertLocation({
       ...result.data,
+      name: result.data.name.toLowerCase(),
       userId,
       slug,
     });

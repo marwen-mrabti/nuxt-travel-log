@@ -23,6 +23,7 @@ export default defineNuxtConfig({
     "nuxt-csurf",
     "@vee-validate/nuxt",
     "@peterbud/nuxt-query",
+    "nuxt-time",
   ],
 
   css: ["~/assets/css/main.css"],
