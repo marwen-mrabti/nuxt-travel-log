@@ -69,7 +69,7 @@ onBeforeRouteLeave(() => {
     class="alert alert-error max-w-[350px] mx-auto"
   >
     <Icon name="tabler:circle-x-filled" size="24" />
-    <span>{{ error?.statusMessage || "An unknown error occurred." }}</span>
+    <span>{{ error?.statusMessage || error?.data?.message || "An unknown error occurred." }}</span>
   </div>
   <div
     v-else-if="isSubmitted"
