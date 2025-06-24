@@ -1,20 +1,21 @@
 <script setup lang='ts'>
 const route = useRoute();
+
+const slug = computed(() => route.params.slug);
 useHead({
-  title: computed(() => `location: ${route.params.slug}`),
+  title: computed(() => `location: ${slug.value}`),
 });
 
-const locationStore = useLocationStore();
-const { location, locationError: error, locationPending: loading } = storeToRefs(locationStore);
+const { data: location, error, isPending } = useLocation(slug.value as string);
 const errorMessage = computed(() => error.value?.statusMessage);
 </script>
 
 <template>
   <div>
     <h1>location details</h1>
-    <div v-if="loading" class="flex flex-col items-center gap-2 w-full">
+    <div v-if="isPending" class="flex flex-col items-center gap-2 w-full">
       <p>Loading location details...</p>
-      <span class="loading loading-dots loading-xl" />
+      <LocationLoadingSkeleton />
     </div>
     <div v-else-if="errorMessage" class="text-red-500">
       {{ errorMessage }}
@@ -25,8 +26,25 @@ const errorMessage = computed(() => error.value?.statusMessage);
       </h2>
       <p>{{ location.description }}</p>
       <p>Coordinates: {{ location.lat }}, {{ location.long }}</p>
-      <p>Created at: {{ new Date(location.createdAt).toLocaleDateString() }}</p>
-      <p>Updated at: {{ new Date(location.updatedAt).toLocaleDateString() }}</p>
+      <p>
+        Created at
+        <NuxtTime
+          :datetime="location.createdAt"
+          year="numeric"
+          month="long"
+          day="numeric"
+        />
+      </p>
+      <p>
+        Updated
+        <NuxtTime
+          :datetime="location.updatedAt"
+          year="numeric"
+          month="long"
+          day="numeric"
+          relative
+        />
+      </p>
     </div>
   </div>
 </template>

@@ -16,16 +16,15 @@ const { handleSubmit, errors, setErrors, resetForm, meta } = useForm<T_InsertLoc
   validationSchema,
 });
 
-const locationStore = useLocationStore();
-const { insertLocationError: error, insertLocationIsError: isError, insertLocationIsPending: isPending, insertLocationIsSuccess: isSubmitted } = storeToRefs(locationStore);
+const { mutateAsync: insertLocationAsync, error, isError, isPending, isSuccess: isSubmitted, reset } = useInsertLocation();
 
 const onSubmit = handleSubmit(async (values) => {
-  await locationStore.insertLocationAsync(values, {
+  await insertLocationAsync(values, {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
       setErrors({});
       resetForm();
-      locationStore.resetInsertLocation();
+      reset();
       return navigateTo("/dashboard");
     },
     onError: (error: FetchError) => {
@@ -41,15 +40,19 @@ function onCancel() {
     // eslint-disable-next-line no-alert
     const confirmCancel = confirm("You have unsaved changes. Are you sure you want to cancel? Your changes will not be saved.");
     if (confirmCancel) {
-      locationStore.resetInsertLocation();
+      reset();
       setErrors({});
       resetForm();
-      router.back();
+      return navigateTo("/dashboard");
     }
   }
-  router.back();
+  return router.back();
 }
 
+onBeforeMount(() => {
+  reset();
+  setErrors({});
+});
 onBeforeRouteLeave(() => {
   if (!isSubmitted.value && meta.value.dirty) {
     // eslint-disable-next-line no-alert

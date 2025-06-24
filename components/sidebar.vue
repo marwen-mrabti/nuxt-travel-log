@@ -1,9 +1,7 @@
 <script setup lang="ts">
 const isSidebarOpen = ref(true);
 
-const locationStore = useLocationStore();
-
-const { locations, locationsPending: loading } = storeToRefs(locationStore);
+const { data: locations, isPending } = useLocations();
 
 onMounted(() => {
   isSidebarOpen.value = localStorage.getItem("isSidebarOpen") === "true";
@@ -49,9 +47,9 @@ function toggleSideBar() {
         :show-label="isSidebarOpen"
       />
 
-      <div v-show="loading || locations?.length" class="divider mx-2 -my-1" />
-      <div v-if="loading" class="w-full pl-2 flex justify-start">
-        <div class="h-4 bg-gray-300 rounded animate-pulse w-2/3" />
+      <div v-show="isPending || locations?.length" class="divider mx-2 -my-1" />
+      <div v-if="isPending" class="w-full pl-2 flex justify-start">
+        <div class="skeleton w-2/3 h-5" />
       </div>
       <ul v-else-if="locations?.length" class="w-full flex flex-col">
         <SidebarButton
