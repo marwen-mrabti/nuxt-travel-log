@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/vue-query";
 
 import heroImg from "~/assets/images/hero-img.webp";
 import { fetcher } from "~/composables/location";
+
 import { useAuthStore } from "~/stores/auth-store";
 
 const authStore = useAuthStore();
