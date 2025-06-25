@@ -69,6 +69,21 @@ function toggleSideBar() {
     </ul>
 
     <div class="flex flex-col w-full sticky bottom-0">
+      <div v-show="isPending || locations?.length" class="divider mx-2 -my-1" />
+      <div v-if="isPending" class="w-full pl-2 flex justify-start">
+        <div class="skeleton w-2/3 h-5" />
+      </div>
+      <ul v-else-if="locations?.length" class="w-full flex flex-col">
+        <SidebarButton
+          v-for="location in locations"
+          :key="location.id"
+          :label="location.name"
+          icon="tabler:map-pin"
+          :to="`/dashboard/location/${location.slug}`"
+          :show-label="isSidebarOpen"
+        />
+      </ul>
+
       <div class="divider mx-2 -my-1" />
       <SidebarButton
         label="Sign Out"
