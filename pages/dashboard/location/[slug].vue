@@ -1,4 +1,6 @@
 <script setup lang='ts'>
+import { useLocation } from "~/composables/location";
+
 const route = useRoute();
 
 const slug = computed(() => route.params.slug);

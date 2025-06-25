@@ -11,7 +11,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:std": "drizzle-kit studio"
   },
   "dependencies": {
     "@libsql/client": "^0.15.9",

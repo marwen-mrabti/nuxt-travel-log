@@ -13,7 +13,7 @@ const route = useRoute();
 </script>
 
 <template>
-  <li
+  <div
     class="tooltip-right w-full"
     :data-tip="showLabel ? undefined : props.label"
     :class="{ tooltip: !showLabel }"
@@ -33,7 +33,7 @@ const route = useRoute();
         <span v-if="showLabel" class="truncate capitalize">{{ props.label }}</span>
       </Transition>
     </NuxtLink>
-  </li>
+  </div>
 </template>
 
   <style scoped>

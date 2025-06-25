@@ -7,6 +7,12 @@ import { InsertLocationSchema } from "~/lib/db/schema";
 import defineAuthenticatedEventHandler from "~/utils/define-authenticated-event-handler";
 import sendZodError from "~/utils/send-zod-error";
 
+export type T_LocationInfo = {
+  id: string;
+  slug: string;
+  name: string;
+};
+
 export default defineAuthenticatedEventHandler(async (event) => {
   const result = await readValidatedBody(event, InsertLocationSchema.safeParse);
 
