@@ -1,11 +1,11 @@
 import type { FetchError } from "ofetch";
 
-import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { useMutation } from "@tanstack/vue-query";
 
 import type { T_InsertLocation } from "~/lib/db/schema";
+import type { T_LocationInfo } from "~/server/api/locations.post";
 
 export function useInsertLocation() {
-  const queryClient = useQueryClient();
   const { $csrfFetch } = useNuxtApp();
 
   const insertLocation = async (values: T_InsertLocation) => {
@@ -21,11 +21,8 @@ export function useInsertLocation() {
     }
   };
 
-  return useMutation<unknown, FetchError, T_InsertLocation>({
-    mutationFn: insertLocation,
+  return useMutation<T_LocationInfo, FetchError, T_InsertLocation>({
     mutationKey: ["addLocation"],
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["locations"] });
-    },
+    mutationFn: insertLocation,
   });
 }

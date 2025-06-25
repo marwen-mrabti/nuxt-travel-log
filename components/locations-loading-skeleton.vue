@@ -1,7 +1,11 @@
 <template>
-  <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    <li v-for="n in 8" :key="n">
-      <div class="card bg-base-100 text-base-content w-full shadow-xl">
+  <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4">
+    <li
+      v-for="n in 9"
+      :key="n"
+      class="w-full"
+    >
+      <div class="card bg-base-100/80 text-base-content w-full shadow-xl">
         <div class="card-body">
           <!-- Title skeleton -->
           <div class="card-title">

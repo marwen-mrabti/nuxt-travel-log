@@ -5,6 +5,7 @@ import type { z } from "zod";
 import { useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 
+import { useInsertLocation } from "~/composables/location";
 import { InsertLocationSchema, type T_InsertLocation } from "~/lib/db/schema";
 
 const validationSchema = toTypedSchema(InsertLocationSchema as unknown as z.ZodObject<any>);
@@ -21,7 +22,8 @@ const { mutateAsync: insertLocationAsync, error, isError, isPending, isSuccess: 
 const onSubmit = handleSubmit(async (values) => {
   await insertLocationAsync(values, {
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["locations", "all"] });
+      queryClient.invalidateQueries({ queryKey: ["locations", "paginated"] });
       setErrors({});
       resetForm();
       reset();
