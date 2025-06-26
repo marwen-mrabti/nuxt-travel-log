@@ -15,6 +15,7 @@ function handleOnMouseEnter() {
       fetcher("/api/locations", { query: { page: pageParam, limit: 12 } }),
     initialPageParam: 1,
   });
+
   queryClient.ensureQueryData({
     queryKey: ["locations", "all"],
     queryFn: () => fetcher("/api/locations"),
