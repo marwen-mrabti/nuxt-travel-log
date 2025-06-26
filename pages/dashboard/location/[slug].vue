@@ -8,19 +8,26 @@ useHead({
   title: computed(() => `location: ${slug.value}`),
 });
 
-const { data: location, error, isPending } = useLocation(slug.value as string);
-const errorMessage = computed(() => error.value?.statusMessage);
+const { data: location, isPending, isError, error, refetch } = useLocation(slug.value as string);
+const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
 </script>
 
 <template>
   <div>
-    <h1>location details</h1>
+    <h2 class="w-full py-2 text-2xl font-bold">
+      location details
+    </h2>
     <div v-if="isPending" class="flex flex-col items-center gap-2 w-full">
       <p>Loading location details...</p>
       <LocationLoadingSkeleton />
     </div>
-    <div v-else-if="errorMessage" class="text-red-500">
-      {{ errorMessage }}
+    <div v-else-if="isError" class="w-full px-2 py-1 flex flex-1 flex-col justify-start justify-self-start gap-2">
+      <p class="text-sm text-error-content bg-error px-2 py-1 text-pretty">
+        failed to fetch the location: {{ errorMessage }}
+      </p>
+      <button class="btn btn-sm btn-info btn-outline mt-2" @click="() => refetch()">
+        Try Again
+      </button>
     </div>
     <div v-else-if="location" class="mb-4">
       <h2 class="text-2xl">
