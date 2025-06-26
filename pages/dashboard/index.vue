@@ -65,8 +65,8 @@ onUnmounted(() => {
 
 <template>
   <div class="page-content-top relative isolate container mx-auto px-4 py-4 flex flex-col gap-4">
-    <h2 class="w-full py-2 text-2xl font-bold sticky top-4 z-100 backdrop-blur-sm">
-      Locations
+    <h2 class="w-full py-2 text-2xl font-bold  sticky top-4 z-100 backdrop-blur-sm">
+      Saved Locations
     </h2>
     <div ref="topScrollTrigger" class="scroll-trigger" />
     <div v-show="isFetchingPreviousPage" class="w-full flex justify-center items-center py-2">
@@ -76,25 +76,18 @@ onUnmounted(() => {
     <LocationsLoadingSkeleton v-if="isPending " />
 
     <div v-else-if="isError || errorMessage" class="text-center">
-      <p class="text-red-500">
+      <p class="text-error-content bg-error px-2 py-1 text-pretty">
         failed to fetch the locations: {{ errorMessage }}
       </p>
-      <button class="btn btn-sm btn-outline mt-2" @click="() => refetch()">
+      <button class="btn btn-sm btn-info btn-outline mt-2" @click="() => refetch()">
         Try Again
       </button>
     </div>
 
-    <ul
+    <LocationsList
       v-else-if="locations && locations.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4 py-1"
-    >
-      <li
-        v-for="location in locations"
-        :key="location.id"
-      >
-        <LocationCard :location="location" />
-      </li>
-    </ul>
+      :locations="locations"
+    />
 
     <div v-else class="text-center">
       <p>You have not added any location yet.</p>

@@ -9,13 +9,14 @@ const authStore = useAuthStore();
 const queryClient = useQueryClient();
 
 function handleOnMouseEnter() {
-  queryClient.prefetchInfiniteQuery({
+  queryClient.ensureInfiniteQueryData({
     queryKey: ["locations", "paginated"],
     queryFn: ({ pageParam = 1 }) =>
       fetcher("/api/locations", { query: { page: pageParam, limit: 12 } }),
     initialPageParam: 1,
   });
-  queryClient.prefetchQuery({
+
+  queryClient.ensureQueryData({
     queryKey: ["locations", "all"],
     queryFn: () => fetcher("/api/locations"),
   });

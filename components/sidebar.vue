@@ -6,7 +6,8 @@ import { useLocations } from "~/composables/location";
 const queryClient = useQueryClient();
 const isSidebarOpen = ref(true);
 
-const { data: locations, isPending } = useLocations();
+const { data: locations, isPending, isError, error, refetch } = useLocations();
+const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
 
 onMounted(() => {
   isSidebarOpen.value = localStorage.getItem("isSidebarOpen") === "true";
@@ -19,13 +20,13 @@ function toggleSideBar() {
 
 function prefetchOnMouseEnter({ href, slug }: { href?: string; slug?: string }) {
   if (slug) {
-    return queryClient.prefetchQuery({
+    return queryClient.ensureQueryData({
       queryKey: ["location", slug],
       queryFn: () => fetcher(`/api/locations/${slug}`),
     });
   }
   else if (href === "dashboard") {
-    queryClient.prefetchInfiniteQuery({
+    queryClient.ensureInfiniteQueryData({
       queryKey: ["locations", "paginated"],
       queryFn: ({ pageParam = 1 }) =>
         fetcher("/api/locations", { query: { page: pageParam, limit: 12 } }),
@@ -77,6 +78,14 @@ function prefetchOnMouseEnter({ href, slug }: { href?: string; slug?: string }) 
       <div class="skeleton w-2/3 h-6" />
       <div class="skeleton w-2/3 h-6" />
       <div class="skeleton w-2/3 h-6" />
+    </div>
+    <div v-else-if="isError" class="w-full px-2 py-1 flex flex-1 flex-col justify-start justify-self-start gap-2">
+      <p class="text-sm text-error-content bg-error px-2 py-1 text-pretty">
+        {{ errorMessage || "failed to fetch the locations." }}
+      </p>
+      <button class="btn btn-sm btn-info btn-outline mt-2" @click="() => refetch()">
+        Try Again
+      </button>
     </div>
     <ul v-else-if="locations?.length" class="w-full flex flex-col flex-1 justify-self-start overflow-x-hidden overflow-y-auto py-1">
       <SidebarButton

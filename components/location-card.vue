@@ -12,7 +12,7 @@ const { location } = toRefs(props);
 
 function prefetchOnMouseEnter({ slug }: { slug?: string }) {
   if (slug) {
-    return queryClient.prefetchQuery({
+    return queryClient.ensureQueryData({
       queryKey: ["location", slug],
       queryFn: () => fetcher(`/api/locations/${slug}`),
     });
