@@ -1,8 +1,25 @@
 <script lang="ts" setup>
+import { useQueryClient } from "@tanstack/vue-query";
+
 import heroImg from "~/assets/images/hero-img.webp";
+import { fetcher } from "~/composables/location";
 import { useAuthStore } from "~/stores/auth-store";
 
 const authStore = useAuthStore();
+const queryClient = useQueryClient();
+
+function handleOnMouseEnter() {
+  queryClient.prefetchInfiniteQuery({
+    queryKey: ["locations", "paginated"],
+    queryFn: ({ pageParam = 1 }) =>
+      fetcher("/api/locations", { query: { page: pageParam, limit: 12 } }),
+    initialPageParam: 1,
+  });
+  queryClient.prefetchQuery({
+    queryKey: ["locations", "all"],
+    queryFn: () => fetcher("/api/locations"),
+  });
+}
 </script>
 
 <template>
@@ -26,6 +43,7 @@ const authStore = useAuthStore();
           v-else
           to="/dashboard"
           class="btn btn-primary"
+          @mouseenter="handleOnMouseEnter"
         >
           Start Logging
         </NuxtLink>

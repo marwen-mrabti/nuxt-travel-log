@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useInfiniteLocations } from "~/composables/location/use-infinite-locations";
+import { useInfiniteLocations } from "~/composables/location";
 
 useHead({
   title: "Locations",

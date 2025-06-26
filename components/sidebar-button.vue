@@ -9,6 +9,8 @@ const props = defineProps<{
   iconColor?: "text-accent" | "text-primary" | "text-secondary";
 }>();
 
+const emits = defineEmits(["mouseenter"]);
+
 const route = useRoute();
 </script>
 
@@ -23,6 +25,7 @@ const route = useRoute();
       :class="{ 'bg-base-300': route.path === props.to, 'justify-center': !showLabel, 'justify-start': showLabel }"
       class="flex items-center gap-2 p-2 hover:bg-base-300 hover:cursor-pointer flex-nowrap"
       prefetch-on="interaction"
+      @mouseenter="emits('mouseenter', props.to)"
     >
       <Icon
         :name="props.icon"

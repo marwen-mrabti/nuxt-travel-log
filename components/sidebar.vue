@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useQueryClient } from "@tanstack/vue-query";
+
 import { useLocations } from "~/composables/location";
 
+const queryClient = useQueryClient();
 const isSidebarOpen = ref(true);
 
 const { data: locations, isPending } = useLocations();
@@ -12,6 +15,23 @@ onMounted(() => {
 function toggleSideBar() {
   isSidebarOpen.value = !isSidebarOpen.value;
   localStorage.setItem("isSidebarOpen", isSidebarOpen.value.toString());
+}
+
+function prefetchOnMouseEnter({ href, slug }: { href?: string; slug?: string }) {
+  if (slug) {
+    return queryClient.prefetchQuery({
+      queryKey: ["location", slug],
+      queryFn: () => fetcher(`/api/locations/${slug}`),
+    });
+  }
+  else if (href === "dashboard") {
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ["locations", "paginated"],
+      queryFn: ({ pageParam = 1 }) =>
+        fetcher("/api/locations", { query: { page: pageParam, limit: 12 } }),
+      initialPageParam: 1,
+    });
+  }
 }
 </script>
 
@@ -40,6 +60,7 @@ function toggleSideBar() {
           icon="tabler:map"
           to="/dashboard"
           :show-label="isSidebarOpen"
+          @mouseenter="prefetchOnMouseEnter({ href: 'dashboard' })"
         />
 
         <SidebarButton
@@ -49,7 +70,7 @@ function toggleSideBar() {
           :show-label="isSidebarOpen"
         />
       </div>
-      <div v-show="isPending || locations?.length" class="divider mx-2 -my-1" />
+      <div v-show="isPending || locations?.length" class="divider mx-1 -my-1" />
     </div>
 
     <div v-if="isPending" class="w-full pl-2 py-1 flex flex-1 flex-col justify-start justify-self-start gap-2">
@@ -65,11 +86,12 @@ function toggleSideBar() {
         icon="tabler:map-pin"
         :to="`/dashboard/location/${location.slug}`"
         :show-label="isSidebarOpen"
+        @mouseenter="prefetchOnMouseEnter({ slug: location.slug })"
       />
     </ul>
 
-    <div class="flex flex-col w-full sticky bottom-0">
-      <div class="divider mx-2 -my-1" />
+    <div class="flex flex-col w-full sticky bottom-2">
+      <div class="divider mx-1 -my-1" />
       <SidebarButton
         label="Sign Out"
         icon="tabler:logout-2"
