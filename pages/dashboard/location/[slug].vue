@@ -9,7 +9,6 @@ useHead({
 });
 
 const { data: location, isPending, isError, error, refetch } = useLocation(slug.value as string);
-
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
 </script>
 
