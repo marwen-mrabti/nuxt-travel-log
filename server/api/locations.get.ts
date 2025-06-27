@@ -16,7 +16,6 @@ export default defineAuthenticatedEventHandler(async (event) => {
     if (pageParam || limitParam) {
       const page = Math.max(1, Number.parseInt(pageParam) || 1);
       const limit = Math.min(100, Math.max(1, Number.parseInt(limitParam) || 10));
-
       const result = await getPaginatedLocations(userId, { page, limit });
       return result;
     }
