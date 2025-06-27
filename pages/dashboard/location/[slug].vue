@@ -55,5 +55,10 @@ const errorMessage = computed(() => error.value?.statusMessage || error.value?.d
         />
       </p>
     </div>
+    <div class="relative w-full mt-2 min-h-[50dvh] h-[60dvh] flex justify-center border-2 border-base-100 rounded-md overflow-hidden">
+      <ClientOnly fallback-tag="div" fallback="<h1 class='text-2xl text-primary-content px-4 py-4'>loading map...</h1>">
+        <Map :location="location" />
+      </ClientOnly>
+    </div>
   </div>
 </template>
