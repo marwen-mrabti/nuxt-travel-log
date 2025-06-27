@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     "@vee-validate/nuxt",
     "@peterbud/nuxt-query",
     "nuxt-time",
+    "nuxt-maplibre",
   ],
 
   css: ["~/assets/css/main.css"],
@@ -62,7 +63,11 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
-
+    optimizeDeps: {
+      include: [
+        "maplibre-gl",
+      ],
+    },
   },
 
 });

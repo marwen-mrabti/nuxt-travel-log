@@ -40,7 +40,6 @@ export function useLocation(slug: string | undefined) {
 
 export function useInsertLocation() {
   const { $csrfFetch } = useNuxtApp();
-
   return useMutation<T_LocationInfo, FetchError, T_InsertLocation>({
     mutationKey: ["addLocation"],
     mutationFn: values =>
