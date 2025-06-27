@@ -16,7 +16,7 @@ export function useLocations() {
   });
 }
 
-export function useInfiniteLocations(limit = 12) {
+export function useInfiniteLocations(limit = 10) {
   return useInfiniteQuery<PaginatedResult<T_SelectLocation>, FetchError>({
     queryKey: ["locations", "paginated"],
     queryFn: ({ pageParam = 1 }) =>
@@ -26,7 +26,7 @@ export function useInfiniteLocations(limit = 12) {
     getPreviousPageParam: firstPage =>
       firstPage.meta.hasPreviousPage ? firstPage.meta.page - 1 : undefined,
     initialPageParam: 1,
-    maxPages: 4,
+    maxPages: 3,
   });
 }
 
