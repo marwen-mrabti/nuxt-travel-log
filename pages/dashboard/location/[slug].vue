@@ -55,6 +55,7 @@ const errorMessage = computed(() => error.value?.statusMessage || error.value?.d
         />
       </p>
     </div>
+    
     <ClientOnly fallback-tag="div">
       <Map :location="location" />
       <template #fallback>
