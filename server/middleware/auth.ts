@@ -8,7 +8,6 @@ export default defineEventHandler(async (event) => {
   });
 
   event.context.user = session?.user as unknown as T_User;
-
   if (event.path.startsWith("/dashboard")) {
     if (!session?.user) {
       await sendRedirect(event, "/", 302);
