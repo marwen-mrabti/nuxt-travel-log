@@ -28,71 +28,73 @@ const center = computed(() => {
 
 <template>
   <div class="relative w-full mt-2 min-h-[50dvh] h-[60dvh] flex justify-center border-2 border-base-100 rounded-md overflow-hidden shadow-lg shadow-neutral-content/30">
-    <MglMap
-      :center="center"
-      :zoom="zoom"
-      :map-style="mapStyle"
-    >
-      <MglFullscreenControl />
-      <MglNavigationControl />
-      <MglGeolocateControl />
+    <div class="relative w-full mt-2 min-h-[50dvh] h-[60dvh] flex justify-center border-2 border-base-100 rounded-md overflow-hidden shadow-lg shadow-neutral-content/30">
+      <MglMap
+        :center="center"
+        :zoom="zoom"
+        :map-style="mapStyle"
+      >
+        <MglFullscreenControl />
+        <MglNavigationControl />
+        <MglGeolocateControl />
 
-      <div v-if="locations?.length">
-        <MglMarker
-          v-for="loc in locations"
-          :key="loc.id"
-          :coordinates="new LngLat(loc.long, loc.lat)"
-        >
-          <template #marker>
-            <div
-              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
-              :data-tip="loc.description"
-            >
-              <Icon
-                name="tabler:map-pin-filled"
-                size="20"
-                class="text-primary dark:text-error"
-              />
-            </div>
-          </template>
-        </MglMarker>
-      </div>
+        <div v-if="locations?.length">
+          <MglMarker
+            v-for="loc in locations"
+            :key="loc.id"
+            :coordinates="new LngLat(loc.long, loc.lat)"
+          >
+            <template #marker>
+              <div
+                class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
+                :data-tip="loc.description"
+              >
+                <Icon
+                  name="tabler:map-pin-filled"
+                  size="20"
+                  class="text-primary dark:text-error"
+                />
+              </div>
+            </template>
+          </MglMarker>
+        </div>
 
-      <div v-else-if="location">
-        <MglMarker
-          :coordinates="new LngLat(location.long, location.lat)"
-          :draggable="false"
-        >
-          <template #marker>
-            <div
-              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
-              data-tip="Drag to your desired location"
-            >
-              <Icon
-                name="tabler:map-pin-filled"
-                size="20"
-                class="text-primary dark:text-error"
-              />
-            </div>
-          </template>
-        </MglMarker>
-      </div>
+        <div v-else-if="location">
+          <MglMarker
+            :coordinates="new LngLat(location.long, location.lat)"
+            :draggable="false"
+          >
+            <template #marker>
+              <div
+                class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
+                data-tip="Drag to your desired location"
+              >
+                <Icon
+                  name="tabler:map-pin-filled"
+                  size="20"
+                  class="text-primary dark:text-error"
+                />
+              </div>
+            </template>
+          </MglMarker>
+        </div>
 
-      <div v-else>
-        <MglMarker
-          v-model:coordinates="newLocationCords"
-          :draggable="true"
-          :drag-options="{
-            sensitivity: 0.4, // Reduce sensitivity
-            inertia: true, // Add momentum/inertia
-            delay: 500, // Add delay before drag starts
-          }"
-          @dragend="newLocationCords = {
-            lng: newLocationCords.lng,
-            lat: newLocationCords.lat,
-          }"
-        />
-      </div>
-    </MglMap>
+        <div v-else>
+          <MglMarker
+            v-model:coordinates="newLocationCords"
+            :draggable="true"
+            :drag-options="{
+              sensitivity: 0.4, // Reduce sensitivity
+              inertia: true, // Add momentum/inertia
+              delay: 500, // Add delay before drag starts
+            }"
+            @dragend="newLocationCords = {
+              lng: newLocationCords.lng,
+              lat: newLocationCords.lat,
+            }"
+          />
+        </div>
+      </MglMap>
+    </div>
   </div>
 </template>
