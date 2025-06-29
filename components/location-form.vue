@@ -4,14 +4,10 @@ import type { z } from "zod";
 
 import { useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
+import { LngLat } from "maplibre-gl";
 
 import { useInsertLocation } from "~/composables/location";
 import { InsertLocationSchema, type T_InsertLocation } from "~/lib/db/schema";
-
-const props = defineProps<{
-  lng: number;
-  lat: number;
-}>();
 
 const router = useRouter();
 const queryClient = useQueryClient();
@@ -27,9 +23,11 @@ const { handleSubmit, errors, setErrors, resetForm, meta } = useForm<T_InsertLoc
 });
 
 const { mutateAsync: insertLocationAsync, error, isError, isPending, isSuccess: isSubmitted, reset } = useInsertLocation();
+const cords = useCords();
+const markerCords = computed(() => new LngLat(cords.value.lng, cords.value.lat));
 
 const onSubmit = handleSubmit(async (values) => {
-  await insertLocationAsync({ ...values, lat: props.lat, long: props.lng }, {
+  await insertLocationAsync({ ...values, lat: markerCords.value.lat, long: markerCords.value.lng }, {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["locations", "all"] });
       queryClient.invalidateQueries({ queryKey: ["locations", "paginated"] });

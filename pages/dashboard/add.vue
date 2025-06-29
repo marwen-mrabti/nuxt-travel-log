@@ -2,9 +2,6 @@
 useHead({
   title: "Add Location",
 });
-
-const lng = ref(13.409542978931427);
-const lat = ref(52.52016381695441);
 </script>
 
 <template>
@@ -17,16 +14,10 @@ const lat = ref(52.52016381695441);
         A location is a place that you traveled or will travel to. it can be a city, a country, state or point of interest. You can add specific times you visited this location after adding it.
       </p>
     </div>
-    <LocationForm
-      v-model:lng="lng"
-      v-model:lat="lat"
-    />
+    <LocationForm />
 
     <ClientOnly fallback-tag="div">
-      <Map
-        v-model:lng="lng"
-        v-model:lat="lat"
-      />
+      <Map />
       <template #fallback>
         <MapClientFallback />
       </template>
