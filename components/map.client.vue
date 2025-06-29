@@ -4,17 +4,27 @@ import { LngLat } from "maplibre-gl";
 import type { T_SelectLocation } from "~/lib/db/schema";
 
 const props = defineProps<{
-  location: T_SelectLocation | undefined;
+  location?: T_SelectLocation | undefined;
+  locations?: T_SelectLocation[] | undefined;
 }>();
 
 const colorMode = useColorMode();
-const newCoordinates = ref(new LngLat(13.409542978931427, 52.52016381695441));
 const mapStyle = computed(() => colorMode.value === "dark" ? "https://tiles.openfreemap.org/styles/liberty" : "https://tiles.openfreemap.org/styles/bright");
-const lng = computed(() => props.location?.long);
-const lat = computed(() => props.location?.lat);
-const coordinates = computed(() => new LngLat(lng.value ?? 13.409542978931427, lat.value ?? 52.52016381695441));
-const center = computed(() => coordinates.value);
-const zoom = ref(7);
+const zoom = computed(() => props.locations?.length ? 2 : 5);
+
+const center = computed(() => {
+  if (props.locations?.length) {
+    return new LngLat(props?.locations[0]?.long as number, props.locations[0]?.lat as number);
+  }
+  else if (props.location) {
+    return new LngLat(props?.location?.long, props.location?.lat);
+  }
+  else {
+    return new LngLat(13.409542978931427, 52.5201638);
+  }
+});
+
+const newLocationCords = ref(new LngLat(13.409542978931427, 52.52016381695441));
 </script>
 
 <template>
@@ -27,32 +37,57 @@ const zoom = ref(7);
       <MglFullscreenControl />
       <MglNavigationControl />
       <MglGeolocateControl />
-      <mgl-marker
-        v-model:coordinates="newCoordinates"
-        :draggable="true"
-        class-name="z-50"
-        @dragstart="console.log('dragstart', newCoordinates)"
-        @drag="console.log('drag')"
-        @dragend="console.log('dragend', newCoordinates)"
-      />
-      <MglMarker
-        v-if="coordinates"
-        class-name="z-50"
-        :coordinates="coordinates"
-      >
-        <template #marker>
-          <div
-            class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
-            data-tip="Drag to your desired location"
-          >
-            <Icon
-              name="tabler:map-pin-filled"
-              size="35"
-              class="text-primary dark:text-error"
-            />
-          </div>
-        </template>
-      </MglMarker>
+
+      <div v-if="locations?.length">
+        <MglMarker
+          v-for="loc in locations"
+          :key="loc.id"
+          :coordinates="new LngLat(loc.long, loc.lat)"
+        >
+          <template #marker>
+            <div
+              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
+              :data-tip="loc.description"
+            >
+              <Icon
+                name="tabler:map-pin-filled"
+                size="35"
+                class="text-primary dark:text-error"
+              />
+            </div>
+          </template>
+        </MglMarker>
+      </div>
+
+      <div v-else-if="location">
+        <MglMarker
+          :coordinates="new LngLat(location.long, location.lat)"
+          :draggable="false"
+        >
+          <template #marker>
+            <div
+              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
+              data-tip="Drag to your desired location"
+            >
+              <Icon
+                name="tabler:map-pin-filled"
+                size="35"
+                class="text-primary dark:text-error"
+              />
+            </div>
+          </template>
+        </MglMarker>
+      </div>
+
+      <div v-else>
+        <mgl-marker
+          v-model:coordinates="newLocationCords"
+          :draggable="true"
+          @dragstart="console.log('dragstart', newLocationCords)"
+          @drag="console.log('drag')"
+          @dragend="console.log('dragend', newLocationCords)"
+        />
+      </div>
     </MglMap>
   </div>
 </template>
