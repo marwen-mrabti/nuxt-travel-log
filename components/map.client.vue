@@ -9,9 +9,8 @@ const props = defineProps<{
 }>();
 
 const colorMode = useColorMode();
-const mapStyle = computed(() => colorMode.value === "dark" ? "https://tiles.openfreemap.org/styles/liberty" : "https://tiles.openfreemap.org/styles/bright");
+const mapStyle = computed(() => colorMode.value === "dark" ? "https://tiles.openfreemap.org/styles/dark" : "https://tiles.openfreemap.org/styles/liberty");
 const zoom = computed(() => props.locations?.length ? 2 : 5);
-
 const center = computed(() => {
   if (props.locations?.length) {
     return new LngLat(props?.locations[0]?.long as number, props.locations[0]?.lat as number);
@@ -28,7 +27,7 @@ const newLocationCords = ref(new LngLat(13.409542978931427, 52.52016381695441));
 </script>
 
 <template>
-  <div class="relative w-full mt-2 min-h-[50dvh] h-[60dvh] flex justify-center border-2 border-base-100 rounded-md overflow-hidden">
+  <div class="relative w-full mt-2 min-h-[50dvh] h-[60dvh] flex justify-center border-2 border-base-100 rounded-md overflow-hidden shadow-lg shadow-neutral-content/30">
     <MglMap
       :center="center"
       :zoom="zoom"
