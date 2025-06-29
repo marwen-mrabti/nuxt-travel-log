@@ -54,7 +54,7 @@ setupObserver(prevRef, () => {
 <template>
   <div
     ref="rootRef"
-    class="overflow-x-auto whitespace-nowrap flex space-x-4 px-6 py-2 relative [scrollbar-width:thin] mask-x-from-90% mask-x-to-95%"
+    class="overflow-x-auto whitespace-nowrap flex space-x-4 px-6 relative [scrollbar-width:thin] mask-x-from-90% mask-x-to-95%"
   >
     <div class="inline-block relative w-6">
       <div ref="prevRef" class="absolute left-0 top-0 bottom-0 w-1" />
