@@ -8,19 +8,28 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { useInsertLocation } from "~/composables/location";
 import { InsertLocationSchema, type T_InsertLocation } from "~/lib/db/schema";
 
-const validationSchema = toTypedSchema(InsertLocationSchema as unknown as z.ZodObject<any>);
+const props = defineProps<{
+  lng: number;
+  lat: number;
+}>();
 
 const router = useRouter();
 const queryClient = useQueryClient();
 
-const { handleSubmit, errors, setErrors, resetForm, meta } = useForm<T_InsertLocation>({
+type T_InsertLocationWithoutCoords = Omit<T_InsertLocation, "longitude" | "latitude">;
+
+const validationSchema = toTypedSchema(
+  InsertLocationSchema.omit({ long: true, lat: true }) as unknown as z.ZodObject<any>,
+);
+
+const { handleSubmit, errors, setErrors, resetForm, meta } = useForm<T_InsertLocationWithoutCoords>({
   validationSchema,
 });
 
 const { mutateAsync: insertLocationAsync, error, isError, isPending, isSuccess: isSubmitted, reset } = useInsertLocation();
 
 const onSubmit = handleSubmit(async (values) => {
-  await insertLocationAsync(values, {
+  await insertLocationAsync({ ...values, lat: props.lat, long: props.lng }, {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["locations", "all"] });
       queryClient.invalidateQueries({ queryKey: ["locations", "paginated"] });
@@ -68,82 +77,81 @@ onBeforeRouteLeave(() => {
 </script>
 
 <template>
-  <div
-    v-if="isError"
-    role="alert"
-    class="alert alert-error max-w-[350px] mx-auto"
-  >
-    <Icon name="tabler:circle-x-filled" size="24" />
-    <span>{{ error?.statusMessage || error?.data?.message || "An unknown error occurred." }}</span>
-  </div>
-  <div
-    v-else-if="isSubmitted"
-    role="alert"
-    class="alert alert-success max-w-[350px] mx-auto"
-  >
-    <Icon name="tabler:circle-check-filled" size="24" />
-    <span>
-      Location added successfully!
-    </span>
-  </div>
-  <form
-    class="flex flex-col gap-2 w-full max-w-[350px] mx-auto"
-    @submit.prevent="onSubmit"
-  >
-    <AppFormField
-      label="Name"
-      name="name"
-      :error="errors.name"
-      :disabled="isPending"
-    />
-    <AppFormField
-      label="Description"
-      name="description"
-      :error="errors.description"
-      type="textarea"
-      :disabled="isPending"
-    />
-    <AppFormField
-      label="Latitude"
-      name="lat"
-      :error="errors.lat"
-      :disabled="isPending"
-    />
-    <AppFormField
-      label="Longitude"
-      name="long"
-      :error="errors.long"
-      :disabled="isPending"
-    />
-    <div class="flex items-center justify-end gap-2 ">
-      <button
-        type="button"
-        class="btn btn-outline"
-        :disabled="isPending"
-        aria-label="Cancel"
-        @click="onCancel"
-      >
-        <Icon name="tabler:arrow-left" size="24" />
-        Cancel
-      </button>
-      <button
-        type="submit"
-        class="btn btn-primary flex items-center gap-2"
-        :disabled="isPending || !meta.dirty || !!errors.name || !!errors.description || !!errors.lat || !!errors.long"
-      >
-        <span>
-          {{ isPending ? "Processing" : "Add Location" }}
-        </span>
-        <span v-if="isPending" class="loading loading-spinner loading-md" />
-        <Icon
-          v-else
-          name="tabler:circle-plus-filled"
-          size="24"
-        />
-      </button>
+  <div class="max-w-md mx-auto w-full flex flex-col items-center justify-center gap-4">
+    <div
+      v-if="isError"
+      role="alert"
+      class="alert alert-error w-full"
+    >
+      <Icon name="tabler:circle-x-filled" size="24" />
+      <span>{{ error?.statusMessage || error?.data?.message || "An unknown error occurred." }}</span>
     </div>
-  </form>
+    <div
+      v-else-if="isSubmitted"
+      role="alert"
+      class="alert alert-success w-full mx-auto"
+    >
+      <Icon name="tabler:circle-check-filled" size="24" />
+      <span>
+        Location added successfully!
+      </span>
+    </div>
+    <form
+      class="flex flex-col gap-2 w-full mx-auto"
+      @submit.prevent="onSubmit"
+    >
+      <AppFormField
+        label="Name"
+        name="name"
+        :error="errors.name"
+        :disabled="isPending"
+      />
+      <AppFormField
+        label="Description"
+        name="description"
+        :error="errors.description"
+        type="textarea"
+        :disabled="isPending"
+      />
+      <!-- <AppFormField
+        label="Latitude"
+        name="lat"
+        :error="errors.lat"
+        :disabled="isPending"
+      />
+      <AppFormField
+        label="Longitude"
+        name="long"
+        :error="errors.long"
+        :disabled="isPending"
+      /> -->
+      <div class="flex items-center justify-end gap-2 ">
+        <button
+          type="button"
+          class="btn btn-outline"
+          :disabled="isPending"
+          aria-label="Cancel"
+          @click="onCancel"
+        >
+          <Icon name="tabler:arrow-left" size="24" />
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary flex items-center gap-2"
+          :disabled="isPending || !meta.dirty || !!errors.name || !!errors.description || !!errors.lat || !!errors.long"
+        >
+          <span>
+            {{ isPending ? "Processing" : "Add Location" }}
+          </span>
+          <span v-if="isPending" class="loading loading-spinner loading-md" />
+          <Icon
+            v-else
+            name="tabler:circle-plus-filled"
+            size="24"
+          />
+        </button>
+      </div>
+    </form>
+  </div>
 </template>
-
-<style scoped>
-</style>

@@ -6,6 +6,13 @@ import type { T_SelectLocation } from "~/lib/db/schema";
 const props = defineProps<{
   location?: T_SelectLocation | undefined;
   locations?: T_SelectLocation[] | undefined;
+  lng?: number;
+  lat?: number;
+}>();
+
+const emit = defineEmits<{
+  (e: "update:lng", value: number): void;
+  (e: "update:lat", value: number): void;
 }>();
 
 const colorMode = useColorMode();
@@ -23,7 +30,24 @@ const center = computed(() => {
   }
 });
 
-const newLocationCords = ref(new LngLat(13.409542978931427, 52.52016381695441));
+// Use a ref for the draggable marker coordinates
+const markerCoordinates = ref(
+  props.lng !== undefined && props.lat !== undefined
+    ? new LngLat(props.lng, props.lat)
+    : center.value,
+);
+
+// Watch for prop changes and update marker coordinates
+watch([() => props.lng, () => props.lat], ([newLng, newLat]) => {
+  if (newLng !== undefined && newLat !== undefined) {
+    markerCoordinates.value = new LngLat(newLng, newLat);
+  }
+});
+
+function handleMarkerDragEnd() {
+  emit("update:lng", markerCoordinates.value.lng);
+  emit("update:lat", markerCoordinates.value.lat);
+}
 </script>
 
 <template>
@@ -80,11 +104,9 @@ const newLocationCords = ref(new LngLat(13.409542978931427, 52.52016381695441));
 
       <div v-else>
         <mgl-marker
-          v-model:coordinates="newLocationCords"
+          v-model:coordinates="markerCoordinates"
           :draggable="true"
-          @dragstart="console.log('dragstart', newLocationCords)"
-          @drag="console.log('drag')"
-          @dragend="console.log('dragend', newLocationCords)"
+          @dragend="handleMarkerDragEnd"
         />
       </div>
     </MglMap>
