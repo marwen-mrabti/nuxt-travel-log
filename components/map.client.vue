@@ -6,18 +6,13 @@ import type { T_SelectLocation } from "~/lib/db/schema";
 const props = defineProps<{
   location?: T_SelectLocation | undefined;
   locations?: T_SelectLocation[] | undefined;
-  lng?: number;
-  lat?: number;
-}>();
-
-const emit = defineEmits<{
-  (e: "update:lng", value: number): void;
-  (e: "update:lat", value: number): void;
 }>();
 
 const colorMode = useColorMode();
 const mapStyle = computed(() => colorMode.value === "dark" ? "https://tiles.openfreemap.org/styles/dark" : "https://tiles.openfreemap.org/styles/liberty");
 const zoom = computed(() => props.locations?.length ? 2 : 5);
+const newLocationCords = useCords();
+
 const center = computed(() => {
   if (props.locations?.length) {
     return new LngLat(props?.locations[0]?.long as number, props.locations[0]?.lat as number);
@@ -26,28 +21,9 @@ const center = computed(() => {
     return new LngLat(props?.location?.long, props.location?.lat);
   }
   else {
-    return new LngLat(13.409542978931427, 52.5201638);
+    return new LngLat(newLocationCords.value.lng, newLocationCords.value.lat);
   }
 });
-
-// Use a ref for the draggable marker coordinates
-const markerCoordinates = ref(
-  props.lng !== undefined && props.lat !== undefined
-    ? new LngLat(props.lng, props.lat)
-    : center.value,
-);
-
-// Watch for prop changes and update marker coordinates
-watch([() => props.lng, () => props.lat], ([newLng, newLat]) => {
-  if (newLng !== undefined && newLat !== undefined) {
-    markerCoordinates.value = new LngLat(newLng, newLat);
-  }
-});
-
-function handleMarkerDragEnd() {
-  emit("update:lng", markerCoordinates.value.lng);
-  emit("update:lat", markerCoordinates.value.lat);
-}
 </script>
 
 <template>
@@ -74,7 +50,7 @@ function handleMarkerDragEnd() {
             >
               <Icon
                 name="tabler:map-pin-filled"
-                size="35"
+                size="20"
                 class="text-primary dark:text-error"
               />
             </div>
@@ -94,7 +70,7 @@ function handleMarkerDragEnd() {
             >
               <Icon
                 name="tabler:map-pin-filled"
-                size="35"
+                size="20"
                 class="text-primary dark:text-error"
               />
             </div>
@@ -103,10 +79,18 @@ function handleMarkerDragEnd() {
       </div>
 
       <div v-else>
-        <mgl-marker
-          v-model:coordinates="markerCoordinates"
+        <MglMarker
+          v-model:coordinates="newLocationCords"
           :draggable="true"
-          @dragend="handleMarkerDragEnd"
+          :drag-options="{
+            sensitivity: 0.4, // Reduce sensitivity
+            inertia: true, // Add momentum/inertia
+            delay: 500, // Add delay before drag starts
+          }"
+          @dragend="newLocationCords = {
+            lng: newLocationCords.lng,
+            lat: newLocationCords.lat,
+          }"
         />
       </div>
     </MglMap>
