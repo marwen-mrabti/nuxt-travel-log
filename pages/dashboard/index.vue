@@ -48,5 +48,12 @@ const errorMessage = computed(() => error.value?.statusMessage || error.value?.d
         </NuxtLink>
       </p>
     </div>
+
+    <ClientOnly>
+      <Map :locations="locations" />
+      <template #fallback>
+        <MapClientFallback />
+      </template>
+    </ClientOnly>
   </div>
 </template>
