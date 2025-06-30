@@ -27,7 +27,7 @@ function prefetchOnMouseEnter({ href, slug }: { href?: string; slug?: string }) 
   }
   else if (href === "dashboard") {
     queryClient.ensureInfiniteQueryData({
-      queryKey: ["locations", "paginated"],
+      queryKey: ["locations-paginated"],
       queryFn: ({ pageParam = 1 }) =>
         fetcher("/api/locations", { query: { page: pageParam, limit: 12 } }),
       initialPageParam: 1,

@@ -4,7 +4,6 @@ import type { z } from "zod";
 
 import { useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
-import { LngLat } from "maplibre-gl";
 
 import { useInsertLocation } from "~/composables/location";
 import { InsertLocationSchema, type T_InsertLocation } from "~/lib/db/schema";
@@ -23,14 +22,15 @@ const { handleSubmit, errors, setErrors, resetForm, meta } = useForm<T_InsertLoc
 });
 
 const { mutateAsync: insertLocationAsync, error, isError, isPending, isSuccess: isSubmitted, reset } = useInsertLocation();
-const cords = useCords();
-const markerCords = computed(() => new LngLat(cords.value.lng, cords.value.lat));
+
+const mapStore = useMapStore();
+const { newLocationCords: cords } = storeToRefs(mapStore);
 
 const onSubmit = handleSubmit(async (values) => {
-  await insertLocationAsync({ ...values, lat: markerCords.value.lat, long: markerCords.value.lng }, {
+  await insertLocationAsync({ ...values, lat: cords.value.lat, long: cords.value.lng }, {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["locations", "all"] });
-      queryClient.invalidateQueries({ queryKey: ["locations", "paginated"] });
+      queryClient.invalidateQueries({ queryKey: ["locations-paginated"] });
       setErrors({});
       resetForm();
       reset();
@@ -56,6 +56,12 @@ function onCancel() {
     }
   }
   return router.back();
+}
+
+function formatNumber(value?: number) {
+  if (!value)
+    return 0;
+  return value.toFixed(5);
 }
 
 onBeforeMount(() => {
@@ -98,6 +104,23 @@ onBeforeRouteLeave(() => {
       class="flex flex-col gap-2 w-full mx-auto"
       @submit.prevent="onSubmit"
     >
+      <p class="text-xs text-gray-400">
+        Current coordinates: {{ formatNumber(cords.lat) }}, {{ formatNumber(cords.lng) }}
+      </p>
+      <p>
+        To set the coordinates:
+      </p>
+      <ul class="list-disc ml-4 text-sm">
+        <li>
+          Drag the <Icon name="tabler:map-pin-filled" class="text-primary dark:text-warning" /> marker on the map.
+        </li>
+        <li>
+          Double click the map.
+        </li>
+        <li>
+          Search for a location below.
+        </li>
+      </ul>
       <AppFormField
         label="Name"
         name="name"
