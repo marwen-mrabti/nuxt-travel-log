@@ -17,9 +17,9 @@ useHead({
     <LocationForm />
 
     <ClientOnly fallback-tag="div">
-      <Map />
+      <AppMap />
       <template #fallback>
-        <MapClientFallback />
+        <AppMapClientFallback />
       </template>
     </ClientOnly>
   </main>

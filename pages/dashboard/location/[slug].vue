@@ -10,6 +10,15 @@ useHead({
 
 const { data: location, isPending, isError, error, refetch } = useLocation(slug.value as string);
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
+
+watchEffect(() => {
+  if (!isPending.value && !location.value && isError.value) {
+    showError({
+      statusCode: 404,
+      statusMessage: error.value?.statusMessage || "Location not found!!",
+    });
+  }
+});
 </script>
 
 <template>
@@ -18,8 +27,8 @@ const errorMessage = computed(() => error.value?.statusMessage || error.value?.d
       <div v-if="isPending" class="flex flex-col items-center gap-2 w-full">
         <LocationLoadingSkeleton />
       </div>
-      <div v-else-if="isError" class="w-full px-2 py-1 flex flex-1 flex-col justify-start justify-self-start gap-1">
-        <p class="text-sm text-error-content bg-error px-2 py-1 text-pretty">
+      <div v-else-if="isError" class="card bg-base-100 w-full min-h-40 px-4 py-1 flex flex-1 flex-col justify-around justify-self-start gap-1">
+        <p class="text-sm text-error-content bg-error/70 px-2 py-1 text-pretty">
           failed to fetch the location: {{ errorMessage }}
         </p>
         <button class="btn btn-sm btn-info btn-outline mt-2" @click="() => refetch()">
@@ -87,9 +96,9 @@ const errorMessage = computed(() => error.value?.statusMessage || error.value?.d
     </div>
 
     <ClientOnly fallback-tag="div">
-      <Map :location="location" />
+      <AppMap :location="location" />
       <template #fallback>
-        <MapClientFallback />
+        <AppMapClientFallback />
       </template>
     </ClientOnly>
   </div>

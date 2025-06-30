@@ -107,22 +107,12 @@ onBeforeRouteLeave(() => {
       <AppFormField
         label="Description"
         name="description"
+
         :error="errors.description"
         type="textarea"
         :disabled="isPending"
       />
-      <!-- <AppFormField
-        label="Latitude"
-        name="lat"
-        :error="errors.lat"
-        :disabled="isPending"
-      />
-      <AppFormField
-        label="Longitude"
-        name="long"
-        :error="errors.long"
-        :disabled="isPending"
-      /> -->
+
       <div class="flex items-center justify-end gap-2 ">
         <button
           type="button"
@@ -137,7 +127,7 @@ onBeforeRouteLeave(() => {
         <button
           type="submit"
           class="btn btn-primary flex items-center gap-2"
-          :disabled="isPending || !meta.dirty || !!errors.name || !!errors.description || !!errors.lat || !!errors.long"
+          :disabled="isPending || !meta.dirty || !!errors.name || !!errors.description"
         >
           <span>
             {{ isPending ? "Processing" : "Add Location" }}

@@ -30,4 +30,8 @@ useHead({
   opacity: 0;
   filter: blur(1rem);
 }
+button,
+a {
+  cursor: pointer;
+}
 </style>

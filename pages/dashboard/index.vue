@@ -49,10 +49,10 @@ const errorMessage = computed(() => error.value?.statusMessage || error.value?.d
       </p>
     </div>
 
-    <ClientOnly>
-      <Map :locations="locations" />
+    <ClientOnly fallback-tag="div">
+      <AppMap :locations="locations" />
       <template #fallback>
-        <MapClientFallback />
+        <AppMapClientFallback />
       </template>
     </ClientOnly>
   </div>
