@@ -10,24 +10,6 @@ useHead({
 
 const { data: location, isPending, isError, error, refetch } = useLocation(slug);
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
-
-watchEffect(() => {
-  if (!isPending.value && !location.value && isError.value) {
-    showError({
-      statusCode: 404,
-      statusMessage: error.value?.statusMessage || "Location not found!!",
-    });
-  }
-});
-
-watchEffect(() => {
-  if (!isPending.value && !location.value && isError.value) {
-    showError({
-      statusCode: 404,
-      statusMessage: error.value?.statusMessage || "Location not found!!",
-    });
-  }
-});
 </script>
 
 <template>
@@ -80,7 +62,7 @@ watchEffect(() => {
           {{ location.description }}
         </p>
         <p class="ml-2">
-          Coordinates: {{ location.lat }}, {{ location.long }}
+          Coordinates: {{ location.lat.toFixed(4) }}, {{ location.long.toFixed(4) }}
         </p>
         <p class="ml-2">
           Created at

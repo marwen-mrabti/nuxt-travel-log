@@ -6,6 +6,7 @@ import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
 
 import type { T_SelectLocation } from "~/lib/db/schema";
+import type { T_LocationInfo } from "~/server/api/locations.post";
 
 export const useMapStore = defineStore("map", () => {
   // 🗺️ Reactive state
@@ -17,20 +18,18 @@ export const useMapStore = defineStore("map", () => {
   const colorMode = useColorMode();
   const route = useRoute();
   const map = useMap();
+  // 🔁 Controlled state
+  const activeLocations = ref<T_SelectLocation[]>([]);
+  const activeLocation = ref<T_LocationInfo | undefined>();
+  const hoveredLocation = ref<T_LocationInfo | undefined>();
 
   // 🌍 Data
   const { data: infiniteData } = useInfiniteLocations();
   const locations = computed(() =>
     infiniteData.value?.pages.flatMap(page => page.data) || [],
   );
-
   const slug = computed(() => route.params.slug as string | undefined);
-  // Move useLocation call here to make it reactive to slug changes
   const { data: location } = useLocation(slug);
-
-  // 🔁 Controlled state
-  const activeLocations = ref<T_SelectLocation[]>([]);
-  const activeLocation = ref<T_SelectLocation | undefined>();
 
   watchEffect(() => {
     if (map.map && !route.params.slug) {
@@ -38,7 +37,6 @@ export const useMapStore = defineStore("map", () => {
     }
   });
 
-  // ✅ Combined effect: react to route + data changes
   watchEffect(() => {
     if (!map.map)
       return;
@@ -51,8 +49,16 @@ export const useMapStore = defineStore("map", () => {
 
     if (routeName === "dashboard") {
       activeLocations.value = locations.value;
-
-      if (activeLocations.value.length > 1) {
+      if (hoveredLocation.value) {
+        map.map.flyTo({
+          center: [hoveredLocation.value.long, hoveredLocation.value.lat],
+          zoom: 4,
+          speed: 0.6,
+          curve: 1.3,
+          essential: true,
+        });
+      }
+      else if (activeLocations.value.length > 1) {
         const bounds = new LngLatBounds();
         activeLocations.value.forEach((loc) => {
           bounds.extend([loc.long, loc.lat]);
@@ -96,6 +102,10 @@ export const useMapStore = defineStore("map", () => {
     }
   });
 
+  watchEffect(() => {
+
+  });
+
   // 🖱️ Click to set new cords (for Add page)
   function handleOnDoubleClick(mglEvent: MglEvent<"dblclick">) {
     if (activeLocation.value || activeLocations.value.length)
@@ -115,6 +125,7 @@ export const useMapStore = defineStore("map", () => {
     newLocationCords,
     mapStyle,
     activeLocation,
+    hoveredLocation,
     activeLocations,
     handleOnDoubleClick,
   };

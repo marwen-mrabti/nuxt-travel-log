@@ -4,16 +4,15 @@ import type { MglEvent } from "@indoorequal/vue-maplibre-gl";
 import { LngLat } from "maplibre-gl";
 
 const mapStore = useMapStore();
-const { mapStyle, activeLocation, activeLocations, newLocationCords } = storeToRefs(mapStore);
+const { mapStyle, activeLocation, hoveredLocation, activeLocations, newLocationCords } = storeToRefs(mapStore);
 
 function handleOnDoubleClick(mglEvent: MglEvent<"dblclick">) {
   mapStore.handleOnDoubleClick(mglEvent);
 }
 
-// Optional: Handle map-specific errors
-function handleMapError(error: any) {
+function handleMapError(error: Error) {
   console.error("Map error:", error);
-  throw new Error(`Map failed to load: ${error.message || "Unknown error"}`);
+  throw createError({ statusCode: 500, statusMessage: error?.message });
 }
 </script>
 
@@ -36,8 +35,8 @@ function handleMapError(error: any) {
         >
           <template #marker>
             <div
-              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
-              :data-tip="loc.description"
+              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer "
+              :data-tip="loc.name"
             >
               <AppPrefetchLink
                 :to="{ name: 'dashboard-location-slug', params: { slug: loc.slug } }"
@@ -47,7 +46,8 @@ function handleMapError(error: any) {
                 <Icon
                   name="tabler:map-pin-filled"
                   size="24"
-                  class="text-primary dark:text-error hover:brightness-90"
+                  class="text-primary dark:text-error hover:text-success"
+                  :class="{ 'text-indigo-800': loc.slug === hoveredLocation?.slug }"
                 />
               </AppPrefetchLink>
             </div>
@@ -63,12 +63,12 @@ function handleMapError(error: any) {
           <template #marker>
             <div
               class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
-              data-tip="Drag to your desired location"
+              :data-tip="activeLocation.name"
             >
               <Icon
                 name="tabler:map-pin-filled"
-                size="24"
-                class="text-primary dark:text-error"
+                size="30"
+                class="text-primary dark:text-info"
               />
             </div>
           </template>
@@ -83,7 +83,20 @@ function handleMapError(error: any) {
             lng: newLocationCords.lng,
             lat: newLocationCords.lat,
           }"
-        />
+        >
+          <template #marker>
+            <div
+              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
+              data-tip="drag the marker to set the location coordinates"
+            >
+              <Icon
+                name="tabler:map-pin-filled"
+                size="35"
+                class="text-primary dark:text-warning"
+              />
+            </div>
+          </template>
+        </MglMarker>
       </div>
     </MglMap>
   </div>
