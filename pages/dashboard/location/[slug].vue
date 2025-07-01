@@ -4,6 +4,7 @@ import { useLocation } from "~/composables/location";
 const route = useRoute();
 
 const slug = computed(() => route.params.slug as string | undefined);
+
 useHead({
   title: computed(() => `location: ${slug.value}`),
 });
