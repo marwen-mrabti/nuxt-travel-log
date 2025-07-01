@@ -15,12 +15,5 @@ useHead({
       </p>
     </div>
     <LocationForm />
-
-    <ClientOnly fallback-tag="div">
-      <AppMap />
-      <template #fallback>
-        <AppMapClientFallback />
-      </template>
-    </ClientOnly>
   </main>
 </template>

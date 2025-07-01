@@ -3,13 +3,22 @@ import { useLocation } from "~/composables/location";
 
 const route = useRoute();
 
-const slug = computed(() => route.params.slug);
+const slug = computed(() => route.params.slug as string | undefined);
 useHead({
   title: computed(() => `location: ${slug.value}`),
 });
 
-const { data: location, isPending, isError, error, refetch } = useLocation(slug.value as string);
+const { data: location, isPending, isError, error, refetch } = useLocation(slug);
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
+
+watchEffect(() => {
+  if (!isPending.value && !location.value && isError.value) {
+    showError({
+      statusCode: 404,
+      statusMessage: error.value?.statusMessage || "Location not found!!",
+    });
+  }
+});
 
 watchEffect(() => {
   if (!isPending.value && !location.value && isError.value) {
@@ -94,12 +103,5 @@ watchEffect(() => {
         </p>
       </div>
     </div>
-
-    <ClientOnly fallback-tag="div">
-      <AppMap :location="location" />
-      <template #fallback>
-        <AppMapClientFallback />
-      </template>
-    </ClientOnly>
   </div>
 </template>

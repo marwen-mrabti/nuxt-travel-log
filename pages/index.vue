@@ -10,9 +10,9 @@ const queryClient = useQueryClient();
 
 function handleOnMouseEnter() {
   queryClient.ensureInfiniteQueryData({
-    queryKey: ["locations", "paginated"],
+    queryKey: ["locations-paginated"],
     queryFn: ({ pageParam = 1 }) =>
-      fetcher("/api/locations", { query: { page: pageParam, limit: 12 } }),
+      fetcher("/api/locations", { query: { page: pageParam, limit: 10 } }),
     initialPageParam: 1,
   });
 

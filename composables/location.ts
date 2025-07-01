@@ -18,7 +18,7 @@ export function useLocations() {
 
 export function useInfiniteLocations(limit = 10) {
   return useInfiniteQuery<PaginatedResult<T_SelectLocation>, FetchError>({
-    queryKey: ["locations", "paginated"],
+    queryKey: ["locations-paginated"],
     queryFn: ({ pageParam = 1 }) =>
       fetcher("/api/locations", { query: { page: pageParam, limit } }),
     getNextPageParam: lastPage =>
@@ -26,11 +26,11 @@ export function useInfiniteLocations(limit = 10) {
     getPreviousPageParam: firstPage =>
       firstPage.meta.hasPreviousPage ? firstPage.meta.page - 1 : undefined,
     initialPageParam: 1,
-    maxPages: 3,
+    maxPages: 2,
   });
 }
 
-export function useLocation(slug: string | undefined) {
+export function useLocation(slug: ComputedRef<string | undefined>) {
   return useQuery<T_SelectLocation, FetchError>({
     queryKey: ["location", slug],
     queryFn: () => fetcher(`/api/locations/${slug}`),
