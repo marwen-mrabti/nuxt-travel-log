@@ -31,7 +31,7 @@ export type PaginatedResult<T> = {
 };
 
 export async function insertLocation(locationData: T_InsertLocationWithUserIdAndSlug) {
-  const [created] = await db.insert(location).values(locationData).returning({ id: location.id, slug: location.slug, name: location.name });
+  const [created] = await db.insert(location).values(locationData).returning({ id: location.id, slug: location.slug, name: location.name, lat: location.lat, long: location.long });
   return created;
 }
 
@@ -42,6 +42,8 @@ export async function getLocationsByUserId(userId: string) {
       id: true,
       name: true,
       slug: true,
+      lat: true,
+      long: true,
     },
     orderBy: [desc(location.createdAt)],
   });

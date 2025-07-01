@@ -11,6 +11,8 @@ export type T_LocationInfo = {
   id: string;
   slug: string;
   name: string;
+  lat: number;
+  long: number;
 };
 
 export default defineAuthenticatedEventHandler(async (event) => {

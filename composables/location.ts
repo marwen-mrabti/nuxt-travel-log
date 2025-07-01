@@ -10,7 +10,7 @@ import type { T_LocationInfo } from "~/server/api/locations.post";
 export const fetcher = <T>(url: string, options?: any) => $fetch<T>(url, options);
 
 export function useLocations() {
-  return useQuery<T_SelectLocation[], FetchError>({
+  return useQuery<T_LocationInfo[], FetchError>({
     queryKey: ["locations", "all"],
     queryFn: () => fetcher("/api/locations"),
   });
@@ -33,7 +33,7 @@ export function useInfiniteLocations(limit = 10) {
 export function useLocation(slug: ComputedRef<string | undefined>) {
   return useQuery<T_SelectLocation, FetchError>({
     queryKey: ["location", slug],
-    queryFn: () => fetcher(`/api/locations/${slug}`),
+    queryFn: () => fetcher(`/api/locations/${slug.value}`),
     enabled: !!slug,
   });
 }
