@@ -19,6 +19,15 @@ watchEffect(() => {
     });
   }
 });
+
+watchEffect(() => {
+  if (!isPending.value && !location.value && isError.value) {
+    showError({
+      statusCode: 404,
+      statusMessage: error.value?.statusMessage || "Location not found!!",
+    });
+  }
+});
 </script>
 
 <template>
