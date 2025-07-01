@@ -45,9 +45,9 @@ function handleMapError(error: Error) {
               >
                 <Icon
                   name="tabler:map-pin-filled"
-                  size="24"
-                  class="text-primary dark:text-error hover:text-success"
-                  :class="{ 'text-indigo-800': loc.slug === hoveredLocation?.slug }"
+                  :size="loc.slug === hoveredLocation?.slug ? 30 : 24"
+                  class="text-error hover:text-info transition-all duration-200 ease-linear"
+                  :class="{ '!text-sky-600': loc.slug === hoveredLocation?.slug }"
                 />
               </AppPrefetchLink>
             </div>
