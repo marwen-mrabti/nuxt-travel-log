@@ -52,8 +52,8 @@ export const useMapStore = defineStore("map", () => {
       if (hoveredLocation.value) {
         map.map.flyTo({
           center: [hoveredLocation.value.long, hoveredLocation.value.lat],
-          zoom: 4,
-          speed: 0.6,
+          zoom: 6,
+          speed: 0.5,
           curve: 1.3,
           essential: true,
         });
@@ -75,7 +75,7 @@ export const useMapStore = defineStore("map", () => {
         map.map.flyTo({
           center: [loc.long, loc.lat],
           zoom: 4,
-          speed: 0.8,
+          speed: 0.6,
           curve: 1.3,
           essential: true,
         });
@@ -100,10 +100,6 @@ export const useMapStore = defineStore("map", () => {
         essential: true,
       });
     }
-  });
-
-  watchEffect(() => {
-
   });
 
   // 🖱️ Click to set new cords (for Add page)
