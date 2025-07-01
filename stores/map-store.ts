@@ -102,6 +102,10 @@ export const useMapStore = defineStore("map", () => {
     }
   });
 
+  watchEffect(() => {
+
+  });
+
   // 🖱️ Click to set new cords (for Add page)
   function handleOnDoubleClick(mglEvent: MglEvent<"dblclick">) {
     if (activeLocation.value || activeLocations.value.length)
