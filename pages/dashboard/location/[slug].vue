@@ -9,7 +9,7 @@ useHead({
   title: computed(() => `location: ${slug.value}`),
 });
 
-const { data: location, isPending, isError, error, refetch } = useLocation(slug);
+const { data: location, isPending, isError, error, refetch } = useLocation({ slug: computed(() => route.params.slug as string), enabled: computed(() => route.name === "dashboard-location-slug" && !!route.params.slug) });
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
 </script>
 

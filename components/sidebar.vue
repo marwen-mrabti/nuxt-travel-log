@@ -36,13 +36,7 @@ function prefetchOnMouseEnter({ href, slug }: { href?: string; slug?: string }) 
 }
 
 const mapStore = useMapStore();
-const { hoveredLocation } = storeToRefs(mapStore);
-function handleOnMouseOver(location: any) {
-  hoveredLocation.value = location;
-}
-function handleOnMouseOut() {
-  hoveredLocation.value = undefined;
-}
+const { setHoveredLocation } = mapStore;
 </script>
 
 <template>
@@ -105,8 +99,8 @@ function handleOnMouseOut() {
         :to="`/dashboard/location/${location.slug}`"
         :show-label="isSidebarOpen"
         @mouseenter="prefetchOnMouseEnter({ slug: location.slug })"
-        @mouseover="() => handleOnMouseOver(location)"
-        @mouseout="() => handleOnMouseOut()"
+        @mouseover="() => setHoveredLocation(location)"
+        @mouseout="() => setHoveredLocation(null)"
       />
     </ul>
 

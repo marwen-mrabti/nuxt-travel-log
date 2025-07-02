@@ -1,6 +1,5 @@
 import type { MglEvent } from "@indoorequal/vue-maplibre-gl";
 
-import { useMap } from "@indoorequal/vue-maplibre-gl";
 import { LngLatBounds } from "maplibre-gl";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
@@ -9,101 +8,103 @@ import type { T_SelectLocation } from "~/lib/db/schema";
 import type { T_LocationInfo } from "~/server/api/locations.post";
 
 export const useMapStore = defineStore("map", () => {
-  // 🗺️ Reactive state
+  const colorMode = useColorMode();
+  const route = useRoute();
+
+  // 🔁 State
+  const activeLocations = ref<T_SelectLocation[]>([]);
+  const activeLocation = ref<T_SelectLocation | undefined>();
+  const hoveredLocation = ref<T_LocationInfo | null>(null);
   const newLocationCords = useState("map-newLocationCords", () => ({
     lng: -0.001545,
     lat: 51.477928,
   }));
 
-  const colorMode = useColorMode();
-  const route = useRoute();
-  const map = useMap();
-  // 🔁 Controlled state
-  const activeLocations = ref<T_SelectLocation[]>([]);
-  const activeLocation = ref<T_LocationInfo | undefined>();
-  const hoveredLocation = ref<T_LocationInfo | undefined>();
+  const mapInstance = ref<any>(null);
+  const mapBounds = ref<LngLatBounds | null>(null);
 
-  // 🌍 Data
-  const { data: infiniteData } = useInfiniteLocations();
-  const locations = computed(() =>
-    infiniteData.value?.pages.flatMap(page => page.data) || [],
-  );
-  const slug = computed(() => route.params.slug as string | undefined);
-  const { data: location } = useLocation(slug);
+  const setMapInstance = (map: any) => {
+    mapInstance.value = map;
+  };
 
+  // 🔧 Actions
+  const setLocations = (newLocations: T_SelectLocation[]) => {
+    activeLocations.value = newLocations;
+  };
+
+  const setLocation = (newLocation: T_SelectLocation | undefined) => {
+    activeLocation.value = newLocation;
+  };
+
+  const setHoveredLocation = (newHoveredLocation: T_LocationInfo | null) => {
+    hoveredLocation.value = newHoveredLocation;
+  };
+
+  // 🗺️ Map navigation logic
   watchEffect(() => {
-    if (map.map && !route.params.slug) {
-      map.map.setZoom(4);
-    }
-  });
-
-  watchEffect(() => {
-    if (!map.map)
+    if (!mapInstance)
       return;
 
     const routeName = route.name;
 
-    // Reset state
-    activeLocations.value = [];
-    activeLocation.value = undefined;
-
-    if (routeName === "dashboard") {
-      activeLocations.value = locations.value;
+    if (routeName === "dashboard" && activeLocations.value.length > 0) {
       if (hoveredLocation.value) {
-        map.map.flyTo({
+        mapInstance.value.flyTo({
           center: [hoveredLocation.value.long, hoveredLocation.value.lat],
-          zoom: 6,
           speed: 0.5,
+          zoom: 7,
           curve: 1.3,
           essential: true,
         });
       }
       else if (activeLocations.value.length > 1) {
-        const bounds = new LngLatBounds();
-        activeLocations.value.forEach((loc) => {
-          bounds.extend([loc.long, loc.lat]);
-        });
+        const firstPoint = activeLocations.value[0];
+        if (!firstPoint) {
+          mapInstance.value.flyTo({
+            center: [newLocationCords.value.lng, newLocationCords.value.lat],
+            speed: 0.5,
+            zoom: 7,
+            curve: 1.3,
+            essential: true,
+          });
+          return;
+        }
 
-        map.map.fitBounds(bounds, {
-          padding: 80,
+        mapBounds.value = activeLocations.value.reduce((bounds, point) => {
+          return bounds.extend([point.long, point.lat]);
+        }, new LngLatBounds(
+          [firstPoint.long, firstPoint.lat],
+          [firstPoint.long, firstPoint.lat],
+        ));
+        mapInstance.value.fitBounds(mapBounds.value, {
+          centre: [firstPoint.long, firstPoint.lat],
+          padding: 60,
           duration: 1000,
           maxZoom: 10,
-        });
-      }
-      else if (activeLocations.value[0]) {
-        const loc = activeLocations.value[0];
-        map.map.flyTo({
-          center: [loc.long, loc.lat],
-          zoom: 4,
-          speed: 0.6,
+          zoom: 2,
           curve: 1.3,
           essential: true,
         });
       }
     }
-    else if (routeName === "dashboard-location-slug" && location.value) {
-      activeLocation.value = location.value;
-      map.map.flyTo({
-        center: [location.value.long, location.value.lat],
-        zoom: 8,
+    else if (routeName === "dashboard-location-slug" && activeLocation.value) {
+      mapInstance.value.flyTo({
+        center: [activeLocation.value.long, activeLocation.value.lat],
         speed: 0.8,
+        zoom: 8,
         curve: 1.3,
         essential: true,
       });
     }
     else if (routeName === "dashboard-add") {
-      map.map.flyTo({
+      mapInstance.value.flyTo({
         center: [newLocationCords.value.lng, newLocationCords.value.lat],
-        zoom: 5,
         speed: 0.8,
+        zoom: 6,
         curve: 1.3,
         essential: true,
       });
     }
-  });
-
-  watchEffect(() => {
-
   });
 
   // 🖱️ Click to set new cords (for Add page)
@@ -122,11 +123,17 @@ export const useMapStore = defineStore("map", () => {
   );
 
   return {
-    newLocationCords,
-    mapStyle,
+    // State
+    activeLocations,
     activeLocation,
     hoveredLocation,
-    activeLocations,
+    newLocationCords,
+    mapStyle,
+    // Actions
+    setMapInstance,
+    setLocations,
+    setLocation,
+    setHoveredLocation,
     handleOnDoubleClick,
   };
 });

@@ -5,7 +5,11 @@ useHead({
   title: "Locations",
 });
 
-const { data, isPending, isError, error, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteLocations();
+const route = useRoute();
+
+const { data, isPending, isError, error, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteLocations(
+  { enabled: computed(() => route.name === "dashboard") },
+);
 
 const locations = computed(() => data.value?.pages.flatMap(page => page.data) || []);
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);

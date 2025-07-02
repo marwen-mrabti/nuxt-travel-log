@@ -4,15 +4,14 @@
 
     <main class="px-4 pb-4 overflow-x-hidden overflow-y-auto">
       <NuxtPage />
-      <ClientOnly fallback-tag="div">
-        <template #fallback>
-          <AppMapFallback />
-        </template>
-
-        <AppMapErrorBoundary>
+      <AppMapErrorBoundary>
+        <ClientOnly fallback-tag="div">
+          <template #fallback>
+            <AppMapFallback />
+          </template>
           <AppMap />
-        </AppMapErrorBoundary>
-      </ClientOnly>
+        </ClientOnly>
+      </AppMapErrorBoundary>
     </main>
   </div>
 </template>
