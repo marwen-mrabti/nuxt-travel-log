@@ -1,40 +1,16 @@
 <script setup lang="ts">
-import type { MglEvent } from "@indoorequal/vue-maplibre-gl";
-
 const route = useRoute();
 const mapStore = useMapStore();
 
-const { activeLocations, activeLocation, mapStyle, hoveredLocation, newLocationCords } = storeToRefs(mapStore);
 const mglMapRef = ref(null);
 function onMapLoad(event: any) {
   if (event.map) {
     mapStore.setMapInstance(event.map);
   }
 }
+const { activeLocations, activeLocation, mapStyle, hoveredLocation, newLocationCords } = storeToRefs(mapStore);
 
-const {
-  data: locationsData,
-} = useInfiniteLocations(
-  { enabled: computed(() => route.name === "dashboard") },
-);
-const locations = computed(() => {
-  if (!locationsData.value)
-    return [];
-  return locationsData.value.pages.flatMap(page => page.data || page);
-});
-const {
-  data: location,
-} = useLocation({ slug: computed(() => route.params.slug as string), enabled: computed(() => route.name === "dashboard-location-slug" && !!route.params.slug) });
-
-// Sync data with store
-watch(() => locations.value, (newLocations) => {
-  mapStore.setLocations(newLocations);
-});
-watch(() => location.value, (newLocation) => {
-  mapStore.setLocation(newLocation);
-});
-
-function handleOnDoubleClick(mglEvent: MglEvent<"dblclick">) {
+function handleOnDoubleClick(mglEvent: any) {
   mapStore.handleOnDoubleClick(mglEvent);
 }
 
@@ -45,10 +21,11 @@ function handleMapError(error: Error) {
 </script>
 
 <template>
-  <div class="relative w-full mt-2 min-h-[50dvh] h-[60dvh] flex justify-center border-1 border-base-100 rounded-md overflow-hidden">
+  <div class="relative w-full min-h-[50dvh] h-[60dvh] flex justify-center border-1 border-base-100 rounded-md overflow-hidden">
     <MglMap
       ref="mglMapRef"
       :map-style="mapStyle"
+      class="w-full h-full"
       @map:load="onMapLoad"
       @map:dblclick="handleOnDoubleClick"
       @map:error="handleMapError"

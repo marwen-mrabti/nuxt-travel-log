@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { QueryKey } from "@tanstack/vue-query";
 import type { RouteLocationRaw } from "vue-router";
 
-import { type QueryKey, useQueryClient } from "@tanstack/vue-query";
+import { useQueryClient } from "@tanstack/vue-query";
 
 type Props = {
   to: RouteLocationRaw;

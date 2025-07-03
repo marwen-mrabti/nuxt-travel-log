@@ -1,11 +1,8 @@
-import type { MglEvent } from "@indoorequal/vue-maplibre-gl";
-
 import { LngLatBounds } from "maplibre-gl";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
 
 import type { T_SelectLocation } from "~/lib/db/schema";
-import type { T_LocationInfo } from "~/server/api/locations.post";
 
 export const useMapStore = defineStore("map", () => {
   const colorMode = useColorMode();
@@ -14,29 +11,23 @@ export const useMapStore = defineStore("map", () => {
   // 🔁 State
   const activeLocations = ref<T_SelectLocation[]>([]);
   const activeLocation = ref<T_SelectLocation | undefined>();
-  const hoveredLocation = ref<T_LocationInfo | null>(null);
+  const hoveredLocation = ref<T_SelectLocation | undefined>();
   const newLocationCords = useState("map-newLocationCords", () => ({
     lng: -0.001545,
     lat: 51.477928,
   }));
 
   const mapInstance = ref<any>(null);
-  const mapBounds = ref<LngLatBounds | null>(null);
-
+  const mapBounds = ref<any>();
   const setMapInstance = (map: any) => {
     mapInstance.value = map;
   };
 
-  // 🔧 Actions
-  const setLocations = (newLocations: T_SelectLocation[]) => {
-    activeLocations.value = newLocations;
+  const setActiveLocations = (newActiveLocations: T_SelectLocation[]) => {
+    activeLocations.value = newActiveLocations;
   };
 
-  const setLocation = (newLocation: T_SelectLocation | undefined) => {
-    activeLocation.value = newLocation;
-  };
-
-  const setHoveredLocation = (newHoveredLocation: T_LocationInfo | null) => {
+  const setHoveredLocation = (newHoveredLocation: T_SelectLocation | undefined) => {
     hoveredLocation.value = newHoveredLocation;
   };
 
@@ -47,7 +38,7 @@ export const useMapStore = defineStore("map", () => {
 
     const routeName = route.name;
 
-    if (routeName === "dashboard" && activeLocations.value.length > 0) {
+    if (routeName === "dashboard" && activeLocations.value?.length > 0) {
       if (hoveredLocation.value) {
         mapInstance.value.flyTo({
           center: [hoveredLocation.value.long, hoveredLocation.value.lat],
@@ -108,7 +99,7 @@ export const useMapStore = defineStore("map", () => {
   });
 
   // 🖱️ Click to set new cords (for Add page)
-  function handleOnDoubleClick(mglEvent: MglEvent<"dblclick">) {
+  function handleOnDoubleClick(mglEvent: any) {
     if (activeLocation.value || activeLocations.value.length)
       return;
     newLocationCords.value.lat = mglEvent.event.lngLat.lat;
@@ -131,8 +122,7 @@ export const useMapStore = defineStore("map", () => {
     mapStyle,
     // Actions
     setMapInstance,
-    setLocations,
-    setLocation,
+    setActiveLocations,
     setHoveredLocation,
     handleOnDoubleClick,
   };

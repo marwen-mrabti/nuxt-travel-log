@@ -16,26 +16,25 @@ export function useLocations() {
   });
 }
 
-export function useInfiniteLocations({ enabled }: { enabled: ComputedRef<boolean> }) {
+export function useInfiniteLocations() {
   return useInfiniteQuery<PaginatedResult<T_SelectLocation>, FetchError>({
     queryKey: ["locations-paginated"],
     queryFn: ({ pageParam = 1 }) =>
-      fetcher("/api/locations", { query: { page: pageParam, limit: 10 } }),
+      fetcher("/api/locations", { query: { page: pageParam, limit: 12 } }),
     getNextPageParam: lastPage =>
       lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
     getPreviousPageParam: firstPage =>
       firstPage.meta.hasPreviousPage ? firstPage.meta.page - 1 : undefined,
     initialPageParam: 1,
     maxPages: 2,
-    enabled,
   });
 }
 
-export function useLocation({ slug, enabled }: { slug: ComputedRef<string | undefined>; enabled: ComputedRef<boolean> }) {
+export function useLocation({ slug }: { slug: ComputedRef<string | undefined> }) {
   return useQuery<T_SelectLocation, FetchError>({
     queryKey: ["location", slug],
     queryFn: () => fetcher(`/api/locations/${slug.value}`),
-    enabled,
+    enabled: !!slug,
   });
 }
 
