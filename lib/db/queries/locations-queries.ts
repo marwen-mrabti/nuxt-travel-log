@@ -60,7 +60,7 @@ export async function getPaginatedLocations(userId: string, { page, limit }: Pag
     .where(eq(location.userId, userId));
 
   const total = totalResult?.count ?? 0;
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil(total / limit) || 1;
 
   // Get paginated data
   const locations = await db.query.location.findMany({

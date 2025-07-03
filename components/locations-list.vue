@@ -27,7 +27,7 @@ function setupObserver(target: Ref<HTMLElement | null>, callback: () => void) {
           if (entries[0] && entries[0].isIntersecting)
             callback();
         },
-        { root: null, threshold: 1.0, rootMargin: "100px" },
+        { root: rootRef.value, threshold: 1, rootMargin: "150px" },
       );
       observer.observe(target.value);
     }

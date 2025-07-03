@@ -20,13 +20,13 @@ export function useInfiniteLocations() {
   return useInfiniteQuery<PaginatedResult<T_SelectLocation>, FetchError>({
     queryKey: ["locations-paginated"],
     queryFn: ({ pageParam = 1 }) =>
-      fetcher("/api/locations", { query: { page: pageParam, limit: 5 } }),
+      fetcher("/api/locations", { query: { page: pageParam, limit: 11 } }),
     getNextPageParam: lastPage =>
       lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
     getPreviousPageParam: firstPage =>
       firstPage.meta.hasPreviousPage ? firstPage.meta.page - 1 : undefined,
     initialPageParam: 1,
-    maxPages: 3,
+    maxPages: 2,
   });
 }
 

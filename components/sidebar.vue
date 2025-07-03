@@ -27,7 +27,7 @@ function setupObserver(target: Ref<HTMLElement | null>, callback: () => void) {
           if (entries[0] && entries[0].isIntersecting)
             callback();
         },
-        { root: null, threshold: 1.0, rootMargin: "100px" },
+        { root: null, threshold: 0.6, rootMargin: "10px" },
       );
       observer.observe(target.value);
     }
@@ -70,7 +70,7 @@ function prefetchOnMouseEnter({ href, slug }: { href?: string; slug?: string }) 
     queryClient.ensureInfiniteQueryData({
       queryKey: ["locations-paginated"],
       queryFn: ({ pageParam = 1 }) =>
-        fetcher("/api/locations", { query: { page: pageParam, limit: 10 } }),
+        fetcher("/api/locations", { query: { page: pageParam, limit: 7 } }),
       initialPageParam: 1,
     });
   }
@@ -105,7 +105,7 @@ watch(() => locations.value, (newLocations) => {
           size="32"
         />
       </button>
-      <div class="flex flex-col items-start gap-4 w-full flex-1" :class="{ 'items-center': !isSidebarOpen, 'items-start': isSidebarOpen }">
+      <div class="flex flex-col items-start gap-4 w-full flex-1 " :class="{ 'items-center': !isSidebarOpen, 'items-start': isSidebarOpen }">
         <SidebarButton
           label="Locations"
           icon="tabler:map"
@@ -141,12 +141,14 @@ watch(() => locations.value, (newLocations) => {
 
     <div
       v-else-if="locations?.length"
-      ref="rootRef"
-      class="w-full flex flex-col flex-1 justify-self-start overflow-x-hidden overflow-y-auto py-1"
+      class="w-full flex flex-col flex-1 justify-self-start overflow-x-hidden overflow-y-auto py-1 "
     >
-      <ul class="w-full flex flex-col">
-        <div class="relative w-full">
-          <div ref="prevRef" class=" h-2 w-full" />
+      <ul
+        ref="rootRef"
+        class="w-full flex flex-col gap-2 pr-4 relative"
+      >
+        <div v-show="hasPreviousPage" class="relative w-full">
+          <div ref="prevRef" class="h-1 w-full" />
           <span
             v-if="isFetchingPreviousPage"
             class="loading loading-spinner loading-sm absolute  text-info"
@@ -163,8 +165,8 @@ watch(() => locations.value, (newLocations) => {
           @mouseover="() => setHoveredLocation(location)"
           @mouseout="() => setHoveredLocation(undefined)"
         />
-        <div class="relative w-full">
-          <div ref="nextRef" class=" h-2 w-full" />
+        <div v-show="hasNextPage" class="relative w-full">
+          <div ref="nextRef" class=" h-1 w-full" />
           <span
             v-if="isFetchingNextPage"
             class="loading loading-spinner loading-sm absolute  text-info"
