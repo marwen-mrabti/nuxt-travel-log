@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import type { MglEvent } from "@indoorequal/vue-maplibre-gl";
-
-import { LngLat } from "maplibre-gl";
-
+const route = useRoute();
 const mapStore = useMapStore();
-const { mapStyle, activeLocation, hoveredLocation, activeLocations, newLocationCords } = storeToRefs(mapStore);
 
-function handleOnDoubleClick(mglEvent: MglEvent<"dblclick">) {
+const mglMapRef = ref(null);
+function onMapLoad(event: any) {
+  if (event.map) {
+    mapStore.setMapInstance(event.map);
+  }
+}
+const { activeLocations, activeLocation, mapStyle, hoveredLocation, newLocationCords } = storeToRefs(mapStore);
+
+function handleOnDoubleClick(mglEvent: any) {
   mapStore.handleOnDoubleClick(mglEvent);
 }
 
@@ -17,9 +21,12 @@ function handleMapError(error: Error) {
 </script>
 
 <template>
-  <div class="relative w-full mt-2 min-h-[50dvh] h-[60dvh] flex justify-center border-1 border-base-100 rounded-md overflow-hidden">
+  <div class="relative w-full min-h-[50dvh] h-[60dvh] flex justify-center border-1 border-base-100 rounded-md overflow-hidden">
     <MglMap
+      ref="mglMapRef"
       :map-style="mapStyle"
+      class="w-full h-full"
+      @map:load="onMapLoad"
       @map:dblclick="handleOnDoubleClick"
       @map:error="handleMapError"
     >
@@ -27,15 +34,16 @@ function handleMapError(error: Error) {
       <MglNavigationControl />
       <MglGeolocateControl />
 
-      <div v-if="activeLocations?.length">
+      <!-- Multiple locations markers -->
+      <div v-if="activeLocations?.length && route.name === 'dashboard'">
         <MglMarker
           v-for="loc in activeLocations"
           :key="loc.id"
-          :coordinates="new LngLat(loc.long, loc.lat)"
+          :coordinates="[loc.long, loc.lat]"
         >
           <template #marker>
             <div
-              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer "
+              class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
               :data-tip="loc.name"
             >
               <AppPrefetchLink
@@ -55,9 +63,10 @@ function handleMapError(error: Error) {
         </MglMarker>
       </div>
 
-      <div v-else-if="activeLocation">
+      <!-- Single location marker -->
+      <div v-else-if="activeLocation && route.name === 'dashboard-location-slug'">
         <MglMarker
-          :coordinates="new LngLat(activeLocation.long, activeLocation.lat)"
+          :coordinates="[activeLocation.long, activeLocation.lat]"
           :draggable="false"
         >
           <template #marker>
@@ -75,6 +84,7 @@ function handleMapError(error: Error) {
         </MglMarker>
       </div>
 
+      <!-- New location marker (draggable) -->
       <div v-else>
         <MglMarker
           v-model:coordinates="newLocationCords"

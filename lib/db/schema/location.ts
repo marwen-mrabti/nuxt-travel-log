@@ -2,8 +2,10 @@ import { relations } from "drizzle-orm";
 import { int, real, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import { z } from "zod";
 
+import type { T_SelectLocationLog } from "~/lib/db/schema/location-log";
+
 import { user } from "~/lib/db/schema/auth";
-import { locationLog, type T_SelectLocationLog } from "~/lib/db/schema/location-log";
+import { locationLog } from "~/lib/db/schema/location-log";
 import { DescriptionSchema, LatSchema, LongSchema, NameSchema } from "~/lib/zod-schemas";
 
 export const location = sqliteTable("location", {

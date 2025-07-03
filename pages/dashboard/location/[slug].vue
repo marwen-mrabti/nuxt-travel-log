@@ -9,8 +9,15 @@ useHead({
   title: computed(() => `location: ${slug.value}`),
 });
 
-const { data: location, isPending, isError, error, refetch } = useLocation(slug);
+const { data: location, isPending, isError, error, refetch } = useLocation({ slug });
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
+const mapStore = useMapStore();
+const { activeLocation } = storeToRefs(mapStore);
+watch(() => location.value, (newLocation) => {
+  if (newLocation) {
+    activeLocation.value = newLocation;
+  }
+}, { immediate: true });
 </script>
 
 <template>

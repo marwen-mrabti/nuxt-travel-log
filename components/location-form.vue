@@ -5,8 +5,10 @@ import type { z } from "zod";
 import { useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 
+import type { T_InsertLocation } from "~/lib/db/schema";
+
 import { useInsertLocation } from "~/composables/location";
-import { InsertLocationSchema, type T_InsertLocation } from "~/lib/db/schema";
+import { InsertLocationSchema } from "~/lib/db/schema";
 
 const router = useRouter();
 const queryClient = useQueryClient();
