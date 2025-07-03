@@ -21,7 +21,7 @@ function handleMapError(error: Error) {
 </script>
 
 <template>
-  <div class="relative w-full min-h-[50dvh] h-[60dvh] flex justify-center border-1 border-base-100 rounded-sm overflow-hidden">
+  <div class="relative w-full min-h-[50dvh] h-[60dvh] flex justify-center border-1 border-base-100 rounded-md overflow-hidden">
     <MglMap
       ref="mglMapRef"
       :map-style="mapStyle"
