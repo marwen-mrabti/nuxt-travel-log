@@ -25,7 +25,6 @@ function handleMapError(error: Error) {
     <MglMap
       ref="mglMapRef"
       :map-style="mapStyle"
-      class="w-full h-full"
       @map:load="onMapLoad"
       @map:dblclick="handleOnDoubleClick"
       @map:error="handleMapError"
@@ -48,14 +47,13 @@ function handleMapError(error: Error) {
             >
               <AppPrefetchLink
                 :to="{ name: 'dashboard-location-slug', params: { slug: loc.slug } }"
-                :query-key="['location', loc.slug]"
-                :query-fn="() => fetcher(`/api/locations/${loc.slug}`)"
+                :slug="loc.slug"
               >
                 <Icon
                   name="tabler:map-pin-filled"
                   :size="loc.slug === hoveredLocation?.slug ? 30 : 24"
-                  class="text-error hover:text-info transition-all duration-200 ease-linear"
-                  :class="{ '!text-sky-600': loc.slug === hoveredLocation?.slug }"
+                  class="text-error hover:text-red-600 transition-all duration-200 ease-linear"
+                  :class="{ '!text-red-700': loc.slug === hoveredLocation?.slug }"
                 />
               </AppPrefetchLink>
             </div>
@@ -77,7 +75,7 @@ function handleMapError(error: Error) {
               <Icon
                 name="tabler:map-pin-filled"
                 size="30"
-                class="text-primary dark:text-info"
+                class="text-primary dark:text-red-600"
               />
             </div>
           </template>

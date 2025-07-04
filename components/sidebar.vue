@@ -1,54 +1,27 @@
 <script setup lang="ts">
+import type { InfiniteData, UseInfiniteQueryReturnType } from "@tanstack/vue-query";
+import type { FetchError } from "ofetch";
+
 import { useQueryClient } from "@tanstack/vue-query";
 
-import { useInfiniteLocations } from "~/composables/location";
+import type { PaginatedResult } from "~/lib/db/queries/locations-queries";
+import type { T_SelectLocation } from "~/lib/db/schema";
 
 const queryClient = useQueryClient();
+const mapStore = useMapStore();
 const isSidebarOpen = ref(true);
+const { setHoveredLocation } = mapStore;
 
-const { data, isPending, isError, error, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteLocations();
+const paginatedQuery
+= inject <UseInfiniteQueryReturnType<InfiniteData<PaginatedResult<T_SelectLocation>>, FetchError>>("paginatedLocations");
 
-const locations = computed(() =>
-  data.value?.pages?.flatMap(page => page.data) || [],
-);
-const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
-
-const rootRef = ref(null);
-const nextRef = ref(null);
-const prevRef = ref(null);
-
-function setupObserver(target: Ref<HTMLElement | null>, callback: () => void) {
-  let observer: IntersectionObserver | null = null;
-
-  onMounted(() => {
-    if (import.meta.client && target.value) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0] && entries[0].isIntersecting)
-            callback();
-        },
-        { root: null, threshold: 1.0, rootMargin: "100px" },
-      );
-      observer.observe(target.value);
-    }
-  });
-
-  onBeforeUnmount(() => {
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
-  });
+if (!paginatedQuery) {
+  throw new Error("Missing paginatedLocations injection");
 }
 
-setupObserver(nextRef, () => {
-  if (hasNextPage)
-    fetchNextPage();
-});
-setupObserver(prevRef, () => {
-  if (hasPreviousPage)
-    fetchPreviousPage();
-});
+const { data, isPending, isError, error, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage, refetch } = paginatedQuery;
+const locations = computed(() => data.value?.pages.flatMap((page: PaginatedResult<T_SelectLocation>) => page.data) || []);
+const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
 
 onMounted(() => {
   isSidebarOpen.value = localStorage.getItem("isSidebarOpen") === "true";
@@ -59,35 +32,25 @@ function toggleSideBar() {
   localStorage.setItem("isSidebarOpen", isSidebarOpen.value.toString());
 }
 
-function prefetchOnMouseEnter({ href, slug }: { href?: string; slug?: string }) {
-  if (slug) {
-    return queryClient.ensureQueryData({
-      queryKey: ["location", slug],
-      queryFn: () => fetcher(`/api/locations/${slug}`),
-    });
-  }
-  else if (href === "dashboard") {
-    queryClient.ensureInfiniteQueryData({
-      queryKey: ["locations-paginated"],
-      queryFn: ({ pageParam = 1 }) =>
-        fetcher("/api/locations", { query: { page: pageParam, limit: 10 } }),
-      initialPageParam: 1,
-    });
-  }
+const hoverTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+function handleOnMouseEnter(location: T_SelectLocation) {
+  hoverTimeout.value = setTimeout(() => {
+    setHoveredLocation(location);
+  }, 750);
 }
-
-const mapStore = useMapStore();
-const { setHoveredLocation } = mapStore;
-const { activeLocations } = storeToRefs(mapStore);
-watch(() => locations.value, (newLocations) => {
-  if (newLocations) {
-    activeLocations.value = newLocations;
+function handleOnMouseLeave() {
+  if (hoverTimeout.value) {
+    clearTimeout(hoverTimeout.value);
+    hoverTimeout.value = null;
   }
-}, { immediate: false, deep: true });
+  hoverTimeout.value = setTimeout(() => {
+    setHoveredLocation(undefined);
+  }, 500);
+}
 </script>
 
 <template>
-  <aside class="relative bg-base-100 overflow-hidden flex flex-col items-start justify-between gap-2 transition-all duration-300 ease-in-out" :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }">
+  <aside class="relative isolate bg-base-100 overflow-hidden flex flex-col items-start justify-between gap-2 transition-all duration-300 ease-in-out" :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }">
     <div class="flex flex-col w-full sticky top-0">
       <button
         class="flex w-full hover:cursor-pointer hover:bg-base-200 p-2 "
@@ -105,13 +68,13 @@ watch(() => locations.value, (newLocations) => {
           size="32"
         />
       </button>
-      <div class="flex flex-col items-start gap-4 w-full flex-1" :class="{ 'items-center': !isSidebarOpen, 'items-start': isSidebarOpen }">
+      <div class="flex flex-col items-start gap-4 w-full flex-1 " :class="{ 'items-center': !isSidebarOpen, 'items-start': isSidebarOpen }">
         <SidebarButton
           label="Locations"
           icon="tabler:map"
           to="/dashboard"
           :show-label="isSidebarOpen"
-          @mouseenter="prefetchOnMouseEnter({ href: 'dashboard' })"
+          @mouseenter="() => prefetchLocations(queryClient)"
         />
 
         <SidebarButton
@@ -124,10 +87,14 @@ watch(() => locations.value, (newLocations) => {
       <div v-show="isPending || locations?.length" class="divider mx-1 -my-1" />
     </div>
 
-    <div v-if="isPending" class="w-full pl-2 py-1 flex flex-1 flex-col justify-start justify-self-start gap-2">
-      <div class="skeleton w-2/3 h-6" />
-      <div class="skeleton w-2/3 h-6" />
-      <div class="skeleton w-2/3 h-6" />
+    <div v-if="isPending" class="w-full pl-2 py-1 flex flex-1 flex-col justify-start justify-self-start gap-2 overflow-y-scroll">
+      <div
+        v-for="n in 7"
+        :key="n"
+        class="skeleton w-5/6 pr-4 py-2 flex items-center"
+      >
+        <Icon name="tabler:map-pin" size="24" />
+      </div>
     </div>
 
     <div v-else-if="isError" class="w-full px-2 py-1 flex flex-1 flex-col justify-start justify-self-start gap-2">
@@ -141,36 +108,44 @@ watch(() => locations.value, (newLocations) => {
 
     <div
       v-else-if="locations?.length"
-      ref="rootRef"
-      class="w-full flex flex-col flex-1 justify-self-start overflow-x-hidden overflow-y-auto py-1"
+      class="w-full flex flex-col flex-1 justify-self-start gap-4 overflow-x-hidden overflow-y-auto py-1"
     >
-      <ul class="w-full flex flex-col">
-        <div class="relative w-full">
-          <div ref="prevRef" class=" h-2 w-full" />
+      <div
+        v-show="hasPreviousPage"
+        class="tooltip tooltip-right w-full relative z-50"
+        data-tip="fetch previous locations"
+      >
+        <button
+          class="btn btn-sm btn-soft btn-circle absolute right-2 -top-1"
+          @click="() => fetchPreviousPage()"
+        >
           <span
             v-if="isFetchingPreviousPage"
             class="loading loading-spinner loading-sm absolute  text-info"
           />
-        </div>
-        <SidebarButton
-          v-for="location in locations"
-          :key="location.id"
-          :label="location.name"
-          icon="tabler:map-pin"
-          :to="`/dashboard/location/${location.slug}`"
-          :show-label="isSidebarOpen"
-          @mouseenter="prefetchOnMouseEnter({ slug: location.slug })"
-          @mouseover="() => setHoveredLocation(location)"
-          @mouseout="() => setHoveredLocation(undefined)"
-        />
-        <div class="relative w-full">
-          <div ref="nextRef" class=" h-2 w-full" />
-          <span
-            v-if="isFetchingNextPage"
-            class="loading loading-spinner loading-sm absolute  text-info"
+          <Icon
+            v-else
+            name="tabler:arrow-back-up-double"
+            size="24"
           />
-        </div>
-      </ul>
+          <span class="sr-only">fetch previous locations</span>
+        </button>
+      </div>
+      <div class="w-full flex flex-col flex-1 justify-self-start">
+        <ul class="w-full flex flex-col pr-4 relative">
+          <SidebarButton
+            v-for="location in locations"
+            :key="location.id"
+            :label="location.name"
+            icon="tabler:map-pin"
+            :to="`/dashboard/location/${location.slug}`"
+            :show-label="isSidebarOpen"
+            @mouseenter="() => prefetchLocation({ slug: location.slug, queryClient })"
+            @mouseover="() => handleOnMouseEnter(location)"
+            @mouseout="handleOnMouseLeave"
+          />
+        </ul>
+      </div>
     </div>
 
     <div class="flex flex-col w-full sticky bottom-2">

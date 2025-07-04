@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import type { QueryKey } from "@tanstack/vue-query";
 import type { RouteLocationRaw } from "vue-router";
 
 import { useQueryClient } from "@tanstack/vue-query";
 
 type Props = {
   to: RouteLocationRaw;
+  slug: string;
   class?: string;
   prefetch?: boolean;
   prefetchOn?: "interaction" | "visibility";
-  queryKey: QueryKey;
-  queryFn: () => Promise<any>;
   [key: string]: any;
 };
 
@@ -30,16 +28,9 @@ const {
 } = props;
 
 async function handlePrefetch() {
-  if (!prefetch || !queryKey || !queryFn) {
-    console.warn(
-      "[PrefetchNuxtLink] 'queryKey' and 'queryFn' must be provided when 'prefetch' is true.",
-    );
-    return;
-  }
-
-  queryClient.ensureQueryData({
-    queryKey,
-    queryFn,
+  prefetchLocation({
+    slug: props.slug,
+    queryClient,
   });
 }
 </script>

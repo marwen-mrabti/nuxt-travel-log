@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-
 import type { T_SelectLocation } from "~/lib/db/schema";
 
 const props = defineProps<{
@@ -17,38 +15,20 @@ const rootRef = ref(null);
 const nextRef = ref(null);
 const prevRef = ref(null);
 
-function setupObserver(target: Ref<HTMLElement | null>, callback: () => void) {
-  let observer: IntersectionObserver | null = null;
-
-  onMounted(() => {
-    if (import.meta.client && target.value) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0] && entries[0].isIntersecting)
-            callback();
-        },
-        { root: null, threshold: 1.0, rootMargin: "100px" },
-      );
-      observer.observe(target.value);
-    }
-  });
-
-  onBeforeUnmount(() => {
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
-  });
-}
-
-setupObserver(nextRef, () => {
-  if (props.hasNextPage)
-    props.fetchNextPage();
-});
-setupObserver(prevRef, () => {
-  if (props.hasPreviousPage)
-    props.fetchPreviousPage();
-});
+// Use infinite scroll composable
+useInfiniteScroll(
+  nextRef,
+  prevRef,
+  rootRef,
+  {
+    hasNextPage: toRef(props, "hasNextPage"),
+    hasPreviousPage: toRef(props, "hasPreviousPage"),
+    fetchNextPage: () => props.fetchNextPage(),
+    fetchPreviousPage: () => props.fetchPreviousPage(),
+    rootMargin: "50px",
+    threshold: 0.5,
+  },
+);
 </script>
 
 <template>

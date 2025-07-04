@@ -20,11 +20,16 @@ export const useMapStore = defineStore("map", () => {
   const mapInstance = ref<any>(null);
   const mapBounds = ref<any>();
   const setMapInstance = (map: any) => {
+    if (!map)
+      return;
     mapInstance.value = map;
   };
 
   const setActiveLocations = (newActiveLocations: T_SelectLocation[]) => {
     activeLocations.value = newActiveLocations;
+  };
+  const setActiveLocation = (newActiveLocation: T_SelectLocation) => {
+    activeLocation.value = newActiveLocation;
   };
 
   const setHoveredLocation = (newHoveredLocation: T_SelectLocation | undefined) => {
@@ -33,7 +38,7 @@ export const useMapStore = defineStore("map", () => {
 
   // 🗺️ Map navigation logic
   watchEffect(() => {
-    if (!mapInstance)
+    if (!mapInstance.value)
       return;
 
     const routeName = route.name;
@@ -91,7 +96,7 @@ export const useMapStore = defineStore("map", () => {
       mapInstance.value.flyTo({
         center: [newLocationCords.value.lng, newLocationCords.value.lat],
         speed: 0.8,
-        zoom: 6,
+        zoom: 3,
         curve: 1.3,
         essential: true,
       });
@@ -109,8 +114,8 @@ export const useMapStore = defineStore("map", () => {
   // 🎨 Map theme
   const mapStyle = computed(() =>
     colorMode.value === "dark"
-      ? "https://tiles.openfreemap.org/styles/dark"
-      : "https://tiles.openfreemap.org/styles/liberty",
+      ? "https://tiles.openfreemap.org/styles/liberty"
+      : "https://tiles.openfreemap.org/styles/bright",
   );
 
   return {
@@ -123,6 +128,7 @@ export const useMapStore = defineStore("map", () => {
     // Actions
     setMapInstance,
     setActiveLocations,
+    setActiveLocation,
     setHoveredLocation,
     handleOnDoubleClick,
   };
