@@ -1,3 +1,8 @@
+<script setup lang="ts">
+const query = useInfiniteLocations();
+provide("paginatedLocations", query);
+</script>
+
 <template>
   <div class="grid grid-cols-[auto_1fr] grid-rows-1 gap-2 relative w-full h-full overflow-hidden">
     <Sidebar class="flex flex-col h-full flex-1" />

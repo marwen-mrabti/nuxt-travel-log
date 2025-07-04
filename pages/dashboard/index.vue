@@ -1,13 +1,31 @@
 <script setup lang="ts">
-import { useInfiniteLocations } from "~/composables/location";
+import type { InfiniteData, UseInfiniteQueryReturnType } from "@tanstack/vue-query";
+import type { FetchError } from "ofetch";
+
+import type { PaginatedResult } from "~/lib/db/queries/locations-queries";
+import type { T_SelectLocation } from "~/lib/db/schema";
 
 useHead({
   title: "Locations",
 });
 
-const { data, isPending, isError, error, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteLocations();
-const locations = computed(() => data.value?.pages.flatMap(page => page.data) || []);
+const paginatedQuery
+= inject <UseInfiniteQueryReturnType<InfiniteData<PaginatedResult<T_SelectLocation>>, FetchError>>("paginatedLocations");
+
+if (!paginatedQuery) {
+  throw new Error("Missing paginatedLocations injection");
+}
+
+const { data, isPending, isError, error, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage, fetchNextPage, hasNextPage, isFetchingNextPage, refetch }
+= paginatedQuery;
+
+const locations = computed(() => data.value?.pages.flatMap((page: PaginatedResult<T_SelectLocation>) => page.data) || []);
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
+
+const mapStore = useMapStore();
+watch(() => locations.value, (newLocations) => {
+  mapStore.setActiveLocations(newLocations);
+}, { immediate: true });
 </script>
 
 <template>

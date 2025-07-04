@@ -11,9 +11,8 @@ const { location } = toRefs(props);
 <template>
   <AppPrefetchLink
     :to="{ name: 'dashboard-location-slug', params: { slug: location.slug } }"
-    :query-key="['location', location.slug]"
-    :query-fn="() => fetcher(`/api/locations/${location.slug}`)"
-    class="card card-compact bg-base-200  w-full h-40 cursor-pointer hover:bg-base-100 border-2 hover:border-accent transition-all duration-200 ease-linear shadow-2xl"
+    :slug="location.slug"
+    class="card card-compact bg-base-200  w-full h-35 cursor-pointer hover:bg-base-100 border-2 hover:border-accent transition-all duration-200 ease-linear shadow-2xl"
   >
     <div class="card-body py-4 overflow-hidden">
       <h2 class="card-title text-balance capitalize">

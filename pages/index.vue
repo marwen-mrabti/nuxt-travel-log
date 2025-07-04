@@ -2,24 +2,12 @@
 import { useQueryClient } from "@tanstack/vue-query";
 
 import heroImg from "~/assets/images/hero-img.webp";
-import { fetcher } from "~/composables/location";
 import { useAuthStore } from "~/stores/auth-store";
 
 const authStore = useAuthStore();
 const queryClient = useQueryClient();
-
 function handleOnMouseEnter() {
-  queryClient.ensureInfiniteQueryData({
-    queryKey: ["locations-paginated"],
-    queryFn: ({ pageParam = 1 }) =>
-      fetcher("/api/locations", { query: { page: pageParam, limit: 10 } }),
-    initialPageParam: 1,
-  });
-
-  queryClient.ensureQueryData({
-    queryKey: ["locations", "all"],
-    queryFn: () => fetcher("/api/locations"),
-  });
+  prefetchLocations(queryClient);
 }
 </script>
 
@@ -40,14 +28,14 @@ function handleOnMouseEnter() {
           Keep track of your travels and adventures with this simple travel log app. Add locations, photos, and notes to create a digital journal of your journeys.
         </p>
         <AuthButton v-if="!authStore.user" />
-        <NuxtLink
+        <button
           v-else
-          to="/dashboard"
           class="btn btn-primary"
-          @mouseenter="handleOnMouseEnter"
+          @click="navigateTo('/dashboard')"
+          @mouseover="handleOnMouseEnter"
         >
           Start Logging
-        </NuxtLink>
+        </button>
       </div>
     </div>
   </div>

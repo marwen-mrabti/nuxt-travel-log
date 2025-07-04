@@ -8,7 +8,7 @@
         :key="n"
         class="w-[16rem]"
       >
-        <div class="card bg-base-100/80 text-base-content w-full h-40 shadow-xl">
+        <div class="card bg-base-100/80 text-base-content w-full h-35 shadow-xl">
           <div class="card-body">
             <!-- Title skeleton -->
             <div class="card-title">

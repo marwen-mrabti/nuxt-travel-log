@@ -1,3 +1,4 @@
+import type { QueryClient } from "@tanstack/vue-query";
 import type { FetchError } from "ofetch";
 
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/vue-query";
@@ -18,7 +19,7 @@ export function useLocations() {
 
 export function useInfiniteLocations() {
   return useInfiniteQuery<PaginatedResult<T_SelectLocation>, FetchError>({
-    queryKey: ["locations-paginated"],
+    queryKey: ["locations", "paginated"],
     queryFn: ({ pageParam = 1 }) =>
       fetcher("/api/locations", { query: { page: pageParam, limit: 11 } }),
     getNextPageParam: lastPage =>
@@ -32,7 +33,7 @@ export function useInfiniteLocations() {
 
 export function useLocation({ slug }: { slug: ComputedRef<string | undefined> }) {
   return useQuery<T_SelectLocation, FetchError>({
-    queryKey: ["location", slug],
+    queryKey: ["location", slug.value],
     queryFn: () => fetcher(`/api/locations/${slug.value}`),
     enabled: !!slug,
   });
@@ -47,5 +48,24 @@ export function useInsertLocation() {
         method: "POST",
         body: values,
       }),
+  });
+}
+
+// Prefetch helpers
+export function prefetchLocation({ slug, queryClient }: { slug: string; queryClient: QueryClient }) {
+  if (!slug)
+    return;
+  queryClient.ensureQueryData({
+    queryKey: ["location", slug],
+    queryFn: () => fetcher(`/api/locations/${slug}`),
+  });
+}
+
+export function prefetchLocations(queryClient: QueryClient) {
+  queryClient.ensureInfiniteQueryData({
+    queryKey: ["locations", "paginated"],
+    queryFn: ({ pageParam = 1 }) =>
+      fetcher("/api/locations", { query: { page: pageParam, limit: 11 } }),
+    initialPageParam: 1,
   });
 }
