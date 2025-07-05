@@ -21,9 +21,9 @@ watch(() => location.value, (newLocation) => {
 </script>
 
 <template>
-  <div class="w-full flex-1 py-2">
-    <div class="w-full md:w-2/3 flex flex-col items-start justify-evenly gap-2">
-      <div v-if="isPending" class="flex flex-col items-center gap-2 w-full">
+  <div class="w-full shrink-0 py-2 px-4">
+    <div class="w-full  flex flex-col items-start justify-evenly gap-2">
+      <div v-if="isPending" class="flex flex-col items-center gap-2 w-2/3">
         <LocationLoadingSkeleton />
       </div>
       <div v-else-if="isError" class="card bg-base-100 w-full min-h-40 px-4 py-1 flex flex-1 flex-col justify-around justify-self-start gap-1">
@@ -35,12 +35,12 @@ watch(() => location.value, (newLocation) => {
         </button>
       </div>
       <div v-else-if="location" class="mb-2 flex flex-col items-start justify-evenly gap-2">
-        <div class="flex gap-1 flex-row items-center">
-          <h2 class="text-2xl text-balance  font-bold">
+        <div class="flex flex-row items-center gap-4">
+          <h2 class="text-2xl capitalize text-balance font-bold">
             {{ location.name }}
           </h2>
           <button
-            class="cursor-pointer "
+            class="cursor-pointer flex items-center justify-center"
             popovertarget="popover-1"
             style="anchor-name:--anchor-1"
           >

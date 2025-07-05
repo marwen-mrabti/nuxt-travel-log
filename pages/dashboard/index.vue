@@ -25,6 +25,10 @@ const errorMessage = computed(() => error.value?.statusMessage || error.value?.d
 const mapStore = useMapStore();
 watch(() => locations.value, (newLocations) => {
   mapStore.setActiveLocations(newLocations);
+  if (isPending.value)
+    mapStore.dataIsLoading = true;
+  else
+    mapStore.dataIsLoading = false;
 }, { immediate: true });
 </script>
 

@@ -4,18 +4,18 @@ import { computed, ref, watchEffect } from "vue";
 
 import type { T_SelectLocation } from "~/lib/db/schema";
 
+import { GREENWICH_Coords } from "~/lib/constants";
+
 export const useMapStore = defineStore("map", () => {
   const colorMode = useColorMode();
   const route = useRoute();
 
   // 🔁 State
+  const dataIsLoading = ref(false);
   const activeLocations = ref<T_SelectLocation[]>([]);
   const activeLocation = ref<T_SelectLocation | undefined>();
   const hoveredLocation = ref<T_SelectLocation | undefined>();
-  const newLocationCords = useState("map-newLocationCords", () => ({
-    lng: -0.001545,
-    lat: 51.477928,
-  }));
+  const newLocationCoords = ref(GREENWICH_Coords);
 
   const mapInstance = ref<any>(null);
   const mapBounds = ref<any>();
@@ -34,6 +34,10 @@ export const useMapStore = defineStore("map", () => {
 
   const setHoveredLocation = (newHoveredLocation: T_SelectLocation | undefined) => {
     hoveredLocation.value = newHoveredLocation;
+  };
+
+  const setNewLocationCoords = (newCoords: { lng: number; lat: number }) => {
+    newLocationCoords.value = newCoords;
   };
 
   // 🗺️ Map navigation logic
@@ -57,7 +61,7 @@ export const useMapStore = defineStore("map", () => {
         const firstPoint = activeLocations.value[0];
         if (!firstPoint) {
           mapInstance.value.flyTo({
-            center: [newLocationCords.value.lng, newLocationCords.value.lat],
+            center: [GREENWICH_Coords.lng, GREENWICH_Coords.lat],
             speed: 0.5,
             zoom: 7,
             curve: 1.3,
@@ -94,9 +98,9 @@ export const useMapStore = defineStore("map", () => {
     }
     else if (routeName === "dashboard-add") {
       mapInstance.value.flyTo({
-        center: [newLocationCords.value.lng, newLocationCords.value.lat],
+        center: [newLocationCoords.value.lng, newLocationCoords.value.lat],
         speed: 0.8,
-        zoom: 3,
+        zoom: 7,
         curve: 1.3,
         essential: true,
       });
@@ -105,10 +109,8 @@ export const useMapStore = defineStore("map", () => {
 
   // 🖱️ Click to set new cords (for Add page)
   function handleOnDoubleClick(mglEvent: any) {
-    if (activeLocation.value || activeLocations.value.length)
-      return;
-    newLocationCords.value.lat = mglEvent.event.lngLat.lat;
-    newLocationCords.value.lng = mglEvent.event.lngLat.lng;
+    const { lng, lat } = mglEvent.event.lngLat;
+    setNewLocationCoords({ lng, lat });
   }
 
   // 🎨 Map theme
@@ -123,13 +125,15 @@ export const useMapStore = defineStore("map", () => {
     activeLocations,
     activeLocation,
     hoveredLocation,
-    newLocationCords,
+    newLocationCoords,
     mapStyle,
+    dataIsLoading,
     // Actions
     setMapInstance,
     setActiveLocations,
     setActiveLocation,
     setHoveredLocation,
+    setNewLocationCoords,
     handleOnDoubleClick,
   };
 });

@@ -8,10 +8,12 @@ import { toTypedSchema } from "@vee-validate/zod";
 import type { T_InsertLocation } from "~/lib/db/schema";
 
 import { useInsertLocation } from "~/composables/location";
+import { GREENWICH_Coords } from "~/lib/constants";
 import { InsertLocationSchema } from "~/lib/db/schema";
 
 const router = useRouter();
 const queryClient = useQueryClient();
+const canceling = ref(false);
 
 type T_InsertLocationWithoutCoords = Omit<T_InsertLocation, "longitude" | "latitude">;
 
@@ -26,13 +28,12 @@ const { handleSubmit, errors, setErrors, resetForm, meta } = useForm<T_InsertLoc
 const { mutateAsync: insertLocationAsync, error, isError, isPending, isSuccess: isSubmitted, reset } = useInsertLocation();
 
 const mapStore = useMapStore();
-const { newLocationCords: cords } = storeToRefs(mapStore);
+const { newLocationCoords: coords } = storeToRefs(mapStore);
 
 const onSubmit = handleSubmit(async (values) => {
-  await insertLocationAsync({ ...values, lat: cords.value.lat, long: cords.value.lng }, {
+  await insertLocationAsync({ ...values, lat: coords.value.lat, long: coords.value.lng }, {
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["locations", "all"] });
-      queryClient.invalidateQueries({ queryKey: ["locations-paginated"] });
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
       setErrors({});
       resetForm();
       reset();
@@ -47,29 +48,28 @@ const onSubmit = handleSubmit(async (values) => {
 });
 
 function onCancel() {
-  if (!isSubmitted.value && meta.value.dirty) {
+  const confirmMsg = "You have unsaved changes. Are you sure you want to cancel? Your changes will not be saved.";
+  canceling.value = true;
+  if (!isSubmitted.value && meta.value.dirty && !canceling.value) {
     // eslint-disable-next-line no-alert
-    const confirmCancel = confirm("You have unsaved changes. Are you sure you want to cancel? Your changes will not be saved.");
-    if (confirmCancel) {
+    if (confirm(confirmMsg)) {
       reset();
       setErrors({});
       resetForm();
+      canceling.value = false;
       return navigateTo("/dashboard");
     }
   }
+  canceling.value = false;
   return router.back();
 }
 
-function formatNumber(value?: number) {
-  if (!value)
-    return 0;
-  return value.toFixed(5);
-}
-
 onBeforeMount(() => {
+  mapStore.setNewLocationCoords(GREENWICH_Coords);
   reset();
   setErrors({});
 });
+
 onBeforeRouteLeave(() => {
   if (!isSubmitted.value && meta.value.dirty) {
     // eslint-disable-next-line no-alert
@@ -83,7 +83,7 @@ onBeforeRouteLeave(() => {
 </script>
 
 <template>
-  <div class="max-w-md mx-auto w-full flex flex-col items-center justify-center gap-4">
+  <div class="max-w-md mx-auto w-full flex flex-col items-center justify-center gap-2">
     <div
       v-if="isError"
       role="alert"
@@ -106,23 +106,6 @@ onBeforeRouteLeave(() => {
       class="flex flex-col gap-2 w-full mx-auto"
       @submit.prevent="onSubmit"
     >
-      <p class="text-xs text-gray-400">
-        Current coordinates: {{ formatNumber(cords.lat) }}, {{ formatNumber(cords.lng) }}
-      </p>
-      <p>
-        To set the coordinates:
-      </p>
-      <ul class="list-disc ml-4 text-sm">
-        <li>
-          Drag the <Icon name="tabler:map-pin-filled" class="text-primary dark:text-warning" /> marker on the map.
-        </li>
-        <li>
-          Double click the map.
-        </li>
-        <li>
-          Search for a location below.
-        </li>
-      </ul>
       <AppFormField
         label="Name"
         name="name"
@@ -137,6 +120,8 @@ onBeforeRouteLeave(() => {
         type="textarea"
         :disabled="isPending"
       />
+      <!-- coordinate slot -->
+      <slot />
 
       <div class="flex items-center justify-end gap-2 ">
         <button
@@ -155,7 +140,7 @@ onBeforeRouteLeave(() => {
           :disabled="isPending || !meta.dirty || !!errors.name || !!errors.description"
         >
           <span>
-            {{ isPending ? "Processing" : "Add Location" }}
+            {{ isPending ? "Processing" : "Add" }}
           </span>
           <span v-if="isPending" class="loading loading-spinner loading-md" />
           <Icon
