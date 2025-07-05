@@ -6,9 +6,9 @@
       <li
         v-for="n in 10"
         :key="n"
-        class="w-[16rem] border-2 rounded-md"
+        class="w-[16rem] h-35 border-2 rounded-md"
       >
-        <div class="card bg-base-100/80 text-base-content w-full h-35 shadow-xl">
+        <div class="card bg-base-100/80 text-base-content w-full shadow-xl">
           <div class="card-body">
             <!-- Title skeleton -->
             <div class="card-title">
@@ -18,9 +18,8 @@
             <!-- Description skeleton - multiple lines -->
             <div class="space-y-2">
               <div class="h-3 skeleton w-full" />
-              <div class="h-3 skeleton w-5/6" />
-              <div class="h-3 skeleton w-4/6" />
-              <div class="h-3 skeleton w-3/6" />
+              <div class="h-3 skeleton w-[95%]" />
+              <div class="h-3 skeleton w-[90%]" />
             </div>
           </div>
         </div>
