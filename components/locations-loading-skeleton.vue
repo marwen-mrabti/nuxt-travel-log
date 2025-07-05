@@ -1,12 +1,12 @@
 <template>
   <div
-    class="overflow-x-auto whitespace-nowrap flex space-x-4 p-2 relative [scrollbar-width:thin] mask-x-from-90% mask-x-to-95%"
+    class="overflow-x-auto whitespace-nowrap flex  px-6 relative [scrollbar-width:thin] mask-x-from-90% mask-x-to-95%"
   >
-    <ul class="flex flex-row flex-nowrap items-center justify-evenly py-2 px-4 gap-4">
+    <ul class="mx-4 flex flex-row flex-nowrap items-center justify-evenly py-2 px-4 gap-4">
       <li
-        v-for="n in 6"
+        v-for="n in 10"
         :key="n"
-        class="w-[16rem]"
+        class="w-[16rem] border-2 rounded-md"
       >
         <div class="card bg-base-100/80 text-base-content w-full h-35 shadow-xl">
           <div class="card-body">

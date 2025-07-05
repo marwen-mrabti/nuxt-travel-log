@@ -47,7 +47,7 @@ useInfiniteScroll(
       <li
         v-for="location in locations"
         :key="location.id"
-        class="w-[16rem]"
+        class="w-[16rem] border-2 rounded-md"
       >
         <LocationCard :location="location" />
       </li>

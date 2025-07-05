@@ -8,7 +8,7 @@ function onMapLoad(event: any) {
     mapStore.setMapInstance(event.map);
   }
 }
-const { activeLocations, activeLocation, mapStyle, hoveredLocation, newLocationCords } = storeToRefs(mapStore);
+const { activeLocations, activeLocation, mapStyle, hoveredLocation, newLocationCoords, dataIsLoading } = storeToRefs(mapStore);
 
 function handleOnDoubleClick(mglEvent: any) {
   mapStore.handleOnDoubleClick(mglEvent);
@@ -21,8 +21,10 @@ function handleMapError(error: Error) {
 </script>
 
 <template>
-  <div class="relative w-full min-h-[50dvh] h-[60dvh] flex justify-center border-1 border-base-100 rounded-md overflow-hidden">
+  <div class="relative w-full h-full  flex justify-center  overflow-hidden">
+    <AppMapFallback v-if="dataIsLoading" />
     <MglMap
+      v-else
       ref="mglMapRef"
       :map-style="mapStyle"
       @map:load="onMapLoad"
@@ -85,11 +87,11 @@ function handleMapError(error: Error) {
       <!-- New location marker (draggable) -->
       <div v-else>
         <MglMarker
-          v-model:coordinates="newLocationCords"
+          v-model:coordinates="newLocationCoords"
           :draggable="true"
-          @dragend="newLocationCords = {
-            lng: newLocationCords.lng,
-            lat: newLocationCords.lat,
+          @dragend="newLocationCoords = {
+            lng: newLocationCoords.lng,
+            lat: newLocationCoords.lat,
           }"
         >
           <template #marker>

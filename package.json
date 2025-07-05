@@ -1,7 +1,11 @@
 {
-  "name": "nuxt-app",
+  "name": "nuxt-Travel-Log",
   "type": "module",
   "private": true,
+  "author": {
+    "name": "Marwen Mrabti",
+    "url": "https://marwen-mrabti-v2.vercel.app"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "concurrently \"bun run dev:db\" \"nuxt dev\"",
@@ -12,7 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky",
-    "db:std": "drizzle-kit studio"
+    "db": "drizzle-kit studio"
   },
   "dependencies": {
     "@indoorequal/vue-maplibre-gl": "^8.4.0",

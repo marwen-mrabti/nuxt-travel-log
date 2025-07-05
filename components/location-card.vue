@@ -12,7 +12,7 @@ const { location } = toRefs(props);
   <AppPrefetchLink
     :to="{ name: 'dashboard-location-slug', params: { slug: location.slug } }"
     :slug="location.slug"
-    class="card card-compact bg-base-200  w-full h-35 cursor-pointer hover:bg-base-100 border-2 hover:border-accent transition-all duration-200 ease-linear shadow-2xl"
+    class="card card-compact bg-base-200  w-full h-35 cursor-pointer hover:bg-base-100 hover:border-accent transition-all duration-200 ease-linear shadow-2xl"
   >
     <div class="card-body py-4 overflow-hidden">
       <h2 class="card-title text-balance capitalize">

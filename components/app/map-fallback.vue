@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full mt-2 min-h-[50dvh] h-[60dvh] flex justify-center border-2 border-base-100 rounded-md overflow-hidden bg-base-200">
+  <div class="relative w-full  h-full  flex justify-center  overflow-hidden">
     <!-- Main skeleton background with subtle pattern -->
     <div class="absolute inset-0 bg-gradient-to-br from-base-200 via-base-100 to-base-200 animate-pulse">
       <!-- Grid pattern to simulate map tiles -->

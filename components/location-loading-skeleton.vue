@@ -1,21 +1,29 @@
 <template>
-  <div class="flex justify-center h-50 w-full">
-    <div class="card bg-base-100 text-base-content w-full shadow-xl">
-      <div class="card-body space-y-2.5">
-        <!-- Title skeleton -->
-        <div class="card-title">
-          <div class="h-6 skeleton w-2/4" />
-        </div>
+  <div class="mb-2 w-full flex flex-col items-start justify-evenly gap-2">
+    <div class="flex flex-row items-center justify-start gap-4 w-full">
+      <!-- Title skeleton -->
+      <div class="skeleton h-8 w-32" />
+    </div>
 
-        <!-- Description skeleton - multiple lines -->
-        <div class="space-y-4">
-          <div class="h-3 skeleton w-5/6" />
-          <div class="h-3 skeleton w-4/6" />
-          <div class="h-3 skeleton w-3/6" />
-          <div class="h-3 skeleton w-2/6" />
-          <div class="h-3 skeleton w-2/6" />
-        </div>
-      </div>
+    <!-- Description skeleton -->
+    <div class="ml-2 space-y-2 w-full">
+      <div class="skeleton h-4 w-full" />
+      <div class="skeleton h-4 w-3/4" />
+    </div>
+
+    <!-- Coordinates skeleton -->
+    <div class="ml-2">
+      <div class="skeleton h-4 w-48" />
+    </div>
+
+    <!-- Created at skeleton -->
+    <div class="ml-2">
+      <div class="skeleton h-4 w-54" />
+    </div>
+
+    <!-- Updated skeleton -->
+    <div class="ml-2">
+      <div class="skeleton h-4 w-44" />
     </div>
   </div>
 </template>
