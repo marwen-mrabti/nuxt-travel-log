@@ -33,7 +33,7 @@ watch(() => locations.value, (newLocations) => {
 </script>
 
 <template>
-  <div class="page-content-top relative isolate container mx-auto px-4 py-2 flex flex-col gap-2">
+  <div class="page-content-top relative isolate container mx-auto px-4 py-4 flex flex-col gap-2">
     <h2 class="w-full py-2 text-2xl font-bold  sticky top-2 z-100 backdrop-blur-sm">
       Saved Locations
     </h2>

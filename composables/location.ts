@@ -1,40 +1,30 @@
 import type { QueryClient } from "@tanstack/vue-query";
-import type { FetchError } from "ofetch";
+import type { $fetch, FetchError } from "ofetch";
 
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/vue-query";
-import { $fetch } from "ofetch";
 
 import type { PaginatedResult } from "~/lib/db/queries/locations-queries";
 import type { T_InsertLocation, T_SelectLocation } from "~/lib/db/schema";
 import type { T_LocationInfo } from "~/server/api/locations.post";
 
-export const fetcher = <T>(url: string, options?: any) => $fetch<T>(url, options);
+import { locationQueryOptions } from "~/utils/query-options";
 
 export function useLocations() {
-  return useQuery<T_LocationInfo[], FetchError>({
-    queryKey: ["locations", "all"],
-    queryFn: () => fetcher("/api/locations"),
-  });
+  return useQuery<T_LocationInfo[], FetchError>(locationQueryOptions.all());
 }
 
 export function useInfiniteLocations() {
   return useInfiniteQuery<PaginatedResult<T_SelectLocation>, FetchError>({
-    queryKey: ["locations", "paginated"],
-    queryFn: ({ pageParam = 1 }) =>
-      fetcher("/api/locations", { query: { page: pageParam, limit: 11 } }),
-    getNextPageParam: lastPage =>
-      lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
-    getPreviousPageParam: firstPage =>
-      firstPage.meta.hasPreviousPage ? firstPage.meta.page - 1 : undefined,
-    initialPageParam: 1,
-    maxPages: 2,
+    ...locationQueryOptions.infinite(),
+    queryFn: context => locationQueryOptions.infinite().queryFn({ pageParam: context.pageParam as number | undefined }),
   });
 }
 
 export function useLocation({ slug }: { slug: ComputedRef<string | undefined> }) {
+  if (!slug.value)
+    return;
   return useQuery<T_SelectLocation, FetchError>({
-    queryKey: ["location", slug.value],
-    queryFn: () => fetcher(`/api/locations/${slug.value}`),
+    ...locationQueryOptions.bySlug(slug.value),
     enabled: !!slug,
   });
 }
@@ -55,17 +45,9 @@ export function useInsertLocation() {
 export function prefetchLocation({ slug, queryClient }: { slug: string; queryClient: QueryClient }) {
   if (!slug)
     return;
-  queryClient.ensureQueryData({
-    queryKey: ["location", slug],
-    queryFn: () => fetcher(`/api/locations/${slug}`),
-  });
+  queryClient.ensureQueryData(locationQueryOptions.bySlug(slug));
 }
 
 export function prefetchLocations(queryClient: QueryClient) {
-  queryClient.ensureInfiniteQueryData({
-    queryKey: ["locations", "paginated"],
-    queryFn: ({ pageParam = 1 }) =>
-      fetcher("/api/locations", { query: { page: pageParam, limit: 11 } }),
-    initialPageParam: 1,
-  });
+  queryClient.ensureInfiniteQueryData(locationQueryOptions.infinite());
 }
