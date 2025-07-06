@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
+import { Analytics } from "@vercel/analytics/nuxt";
 
 const authStore = useAuthStore();
 await authStore.init();
@@ -11,6 +12,7 @@ await authStore.init();
     <main class="flex flex-col flex-1 overflow-hidden">
       <slot />
     </main>
+    <Analytics />
     <VueQueryDevtools :initial-is-open="false" />
   </div>
 </template>
