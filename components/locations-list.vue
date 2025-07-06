@@ -43,11 +43,11 @@ useInfiniteScroll(
         class="loading loading-spinner loading-md absolute -left-4 top-1/2 -translate-y-1/2 text-info"
       />
     </div>
-    <ul class="max-h-fit flex flex-row flex-nowrap items-center justify-evenly py-2 px-4 gap-4">
+    <ul class="max-h-fit flex flex-row flex-nowrap items-center justify-evenly py-2 px-4 gap-4 snap-x">
       <li
         v-for="location in locations"
         :key="location.id"
-        class="w-[16rem] h-35 rounded-md"
+        class="w-[16rem] h-35 rounded-md snap-center"
       >
         <LocationCard :location="location" />
       </li>
