@@ -3,7 +3,6 @@ import type { $fetch, FetchError } from "ofetch";
 
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/vue-query";
 
-import type { PaginatedResult } from "~/lib/db/queries/locations-queries";
 import type { T_InsertLocation, T_SelectLocation } from "~/lib/db/schema";
 import type { T_LocationInfo } from "~/server/api/locations.post";
 
@@ -14,10 +13,7 @@ export function useLocations() {
 }
 
 export function useInfiniteLocations() {
-  return useInfiniteQuery<PaginatedResult<T_SelectLocation>, FetchError>({
-    ...locationQueryOptions.infinite(),
-    queryFn: context => locationQueryOptions.infinite().queryFn({ pageParam: context.pageParam as number | undefined }),
-  });
+  return useInfiniteQuery(locationQueryOptions.infinite());
 }
 
 export function useLocation({ slug }: { slug: ComputedRef<string | undefined> }) {
