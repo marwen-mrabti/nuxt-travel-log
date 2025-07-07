@@ -10,6 +10,7 @@ import type { T_InsertLocation } from "~/lib/db/schema";
 import { useInsertLocation } from "~/composables/location";
 import { GREENWICH_Coords } from "~/lib/constants";
 import { InsertLocationSchema } from "~/lib/db/schema";
+import { locationKeys } from "~/utils/query-options";
 
 const router = useRouter();
 const queryClient = useQueryClient();
@@ -33,7 +34,7 @@ const { newLocationCoords: coords } = storeToRefs(mapStore);
 const onSubmit = handleSubmit(async (values) => {
   await insertLocationAsync({ ...values, lat: coords.value.lat, long: coords.value.lng }, {
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: locationKeys.paginated });
       setErrors({});
       resetForm();
       reset();

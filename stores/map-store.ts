@@ -80,11 +80,11 @@ export const useMapStore = defineStore("map", () => {
         ));
         mapInstance.value.fitBounds(mapBounds.value, {
           centre: [firstPoint.long, firstPoint.lat],
-          padding: 60,
+          padding: 100,
           duration: 1000,
           maxZoom: 10,
           zoom: 2,
-          curve: 1.3,
+          curve: 0.8,
           essential: true,
         });
       }
