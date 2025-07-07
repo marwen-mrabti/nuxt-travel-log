@@ -63,6 +63,11 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    optimizeDeps: {
+      include: [
+        "maplibre-gl",
+      ],
+    },
   },
 
   experimental: {
