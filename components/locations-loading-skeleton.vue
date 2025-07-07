@@ -6,9 +6,9 @@
       <li
         v-for="n in 10"
         :key="n"
-        class="w-[16rem] h-35 border-2 rounded-md"
+        class="w-[16rem] h-35 rounded-md"
       >
-        <div class="card bg-base-100/80 text-base-content w-full shadow-xl">
+        <div class="card bg-base-100/80 hover:border-1 hover:border-accent transition-all duration-200 ease-linear text-base-content w-full shadow-xl">
           <div class="card-body">
             <!-- Title skeleton -->
             <div class="card-title">

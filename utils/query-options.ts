@@ -1,5 +1,6 @@
 import type { QueryKey } from "@tanstack/vue-query";
 
+import { queryOptions } from "@tanstack/vue-query";
 import { $fetch } from "ofetch";
 
 import type { PaginatedResult } from "~/lib/db/queries/locations-queries";
@@ -9,15 +10,15 @@ import type { T_LocationInfo } from "~/server/api/locations.post";
 export const fetcher = <T>(url: string, options?: any) => $fetch<T>(url, options);
 
 // Query key factories
-const locationKeys = {
+export const locationKeys = {
   all: ["locations", "all"] as QueryKey,
   paginated: ["locations", "paginated"] as QueryKey,
-  detail: (slug: string) => ["location", slug] as QueryKey,
+  detail: (slug: string) => ["locations", "detail", slug] as QueryKey,
 };
 
 // Query options
 export const locationQueryOptions = {
-  all: () => ({
+  all: () => queryOptions({
     queryKey: locationKeys.all,
     queryFn: () => fetcher<T_LocationInfo[]>("/api/locations"),
   }),
@@ -36,7 +37,7 @@ export const locationQueryOptions = {
     maxPages: 2,
   }),
 
-  bySlug: (slug: string) => ({
+  bySlug: (slug: string) => queryOptions({
     queryKey: locationKeys.detail(slug),
     queryFn: () => fetcher<T_SelectLocation>(`/api/locations/${slug}`),
   }),

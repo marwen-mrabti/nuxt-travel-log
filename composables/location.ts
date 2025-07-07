@@ -29,7 +29,7 @@ export function useInsertLocation() {
   const { $csrfFetch } = useNuxtApp();
   return useMutation<T_LocationInfo, FetchError, T_InsertLocation>({
     mutationKey: ["addLocation"],
-    mutationFn: values =>
+    mutationFn: (values: T_InsertLocation) =>
       ($csrfFetch as typeof $fetch)("/api/locations", {
         method: "POST",
         body: values,
