@@ -1,4 +1,3 @@
-import { useMap } from "@indoorequal/vue-maplibre-gl";
 import { LngLatBounds } from "maplibre-gl";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
@@ -18,8 +17,7 @@ export const useMapStore = defineStore("map", () => {
   const hoveredLocation = ref<T_SelectLocation | undefined>();
   const newLocationCoords = ref(GREENWICH_Coords);
 
-  const map = useMap();
-  const mapInstance = ref<any>(map.map);
+  const mapInstance = ref<any>(null);
   const mapBounds = ref<any>();
   const setMapInstance = (map: any) => {
     if (!map)
