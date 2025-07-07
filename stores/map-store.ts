@@ -1,3 +1,4 @@
+import { useMap } from "@indoorequal/vue-maplibre-gl";
 import { LngLatBounds } from "maplibre-gl";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
@@ -17,7 +18,8 @@ export const useMapStore = defineStore("map", () => {
   const hoveredLocation = ref<T_SelectLocation | undefined>();
   const newLocationCoords = ref(GREENWICH_Coords);
 
-  const mapInstance = ref<any>(null);
+  const map = useMap();
+  const mapInstance = ref<any>(map.map);
   const mapBounds = ref<any>();
   const setMapInstance = (map: any) => {
     if (!map)
@@ -116,8 +118,8 @@ export const useMapStore = defineStore("map", () => {
   // 🎨 Map theme
   const mapStyle = computed(() =>
     colorMode.value === "dark"
-      ? "https://tiles.openfreemap.org/styles/liberty"
-      : "https://tiles.openfreemap.org/styles/bright",
+      ? "/styles/dark.json"
+      : "https://tiles.openfreemap.org/styles/liberty",
   );
 
   return {

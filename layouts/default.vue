@@ -4,6 +4,9 @@ import { Analytics } from "@vercel/analytics/nuxt";
 
 const authStore = useAuthStore();
 await authStore.init();
+
+// eslint-disable-next-line node/no-process-env
+const isProd = process.env.NODE_ENV === "production";
 </script>
 
 <template>
@@ -11,9 +14,9 @@ await authStore.init();
     <AppNavBar />
     <main class="flex flex-col flex-1 overflow-hidden">
       <slot />
+      <Analytics v-if="isProd" />
+      <VueQueryDevtools :initial-is-open="false" />
     </main>
-    <Analytics />
-    <VueQueryDevtools :initial-is-open="false" />
   </div>
 </template>
 
