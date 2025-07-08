@@ -1,10 +1,10 @@
 import { LngLatBounds } from "maplibre-gl";
 import { defineStore } from "pinia";
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref } from "vue";
 
-import type { T_SelectLocation } from "~/lib/db/schema";
+import type { T_LongLat, T_MapPoint } from "~/lib/types";
 
-import { GREENWICH_Coords } from "~/lib/constants";
+import { EDIT_PAGES, GREENWICH_Coords } from "~/lib/constants";
 
 export const useMapStore = defineStore("map", () => {
   const colorMode = useColorMode();
@@ -12,56 +12,45 @@ export const useMapStore = defineStore("map", () => {
 
   // 🔁 State
   const dataIsLoading = ref(false);
-  const activeLocations = ref<T_SelectLocation[]>([]);
-  const activeLocation = ref<T_SelectLocation | undefined>();
-  const hoveredLocation = ref<T_SelectLocation | undefined>();
-  const newLocationCoords = ref(GREENWICH_Coords);
+  const mapPoints = ref<T_MapPoint[]>([]);
+  const selectedPoint = ref<T_MapPoint | null>(null);
+  const hoveredPoint = ref<T_MapPoint | null>(null);
+  const newLocationCoords = ref<T_LongLat>(GREENWICH_Coords);
 
   const mapInstance = ref<any>(null);
-  const mapBounds = ref<any>();
+  const mapBounds = ref<LngLatBounds | null>(null);
   const setMapInstance = (map: any) => {
     if (!map)
       return;
     mapInstance.value = map;
   };
 
-  const setActiveLocations = (newActiveLocations: T_SelectLocation[]) => {
-    activeLocations.value = newActiveLocations;
-  };
-  const setActiveLocation = (newActiveLocation: T_SelectLocation) => {
-    activeLocation.value = newActiveLocation;
-  };
-
-  const setHoveredLocation = (newHoveredLocation: T_SelectLocation | undefined) => {
-    hoveredLocation.value = newHoveredLocation;
-  };
-
-  const setNewLocationCoords = (newCoords: { lng: number; lat: number }) => {
+  const setNewLocationCoords = (newCoords: T_LongLat) => {
     newLocationCoords.value = newCoords;
   };
 
   // 🗺️ Map navigation logic
-  watchEffect(() => {
+  effect(() => {
     if (!mapInstance.value)
       return;
 
     const routeName = route.name;
 
-    if (routeName === "dashboard" && activeLocations.value?.length > 0) {
-      if (hoveredLocation.value) {
+    if (routeName === "dashboard" && mapPoints.value?.length > 0) {
+      if (hoveredPoint.value) {
         mapInstance.value.flyTo({
-          center: [hoveredLocation.value.long, hoveredLocation.value.lat],
+          center: [hoveredPoint.value.long, hoveredPoint.value.lat],
           speed: 0.5,
           zoom: 7,
           curve: 1.3,
           essential: true,
         });
       }
-      else if (activeLocations.value.length > 1) {
-        const firstPoint = activeLocations.value[0];
+      else if (mapPoints.value.length > 1) {
+        const firstPoint = mapPoints.value[0];
         if (!firstPoint) {
           mapInstance.value.flyTo({
-            center: [GREENWICH_Coords.lng, GREENWICH_Coords.lat],
+            center: [GREENWICH_Coords.long, GREENWICH_Coords.lat],
             speed: 0.5,
             zoom: 7,
             curve: 1.3,
@@ -70,35 +59,34 @@ export const useMapStore = defineStore("map", () => {
           return;
         }
 
-        mapBounds.value = activeLocations.value.reduce((bounds, point) => {
+        mapBounds.value = mapPoints.value.reduce((bounds, point) => {
           return bounds.extend([point.long, point.lat]);
         }, new LngLatBounds(
           [firstPoint.long, firstPoint.lat],
           [firstPoint.long, firstPoint.lat],
         ));
         mapInstance.value.fitBounds(mapBounds.value, {
-          centre: [firstPoint.long, firstPoint.lat],
           padding: 100,
           duration: 1000,
           maxZoom: 10,
           zoom: 2,
-          curve: 0.8,
+          curve: 1.3,
           essential: true,
         });
       }
     }
-    else if (routeName === "dashboard-location-slug" && activeLocation.value) {
+    else if (routeName === "dashboard-location-slug" && selectedPoint.value) {
       mapInstance.value.flyTo({
-        center: [activeLocation.value.long, activeLocation.value.lat],
+        center: [selectedPoint.value.long, selectedPoint.value.lat],
         speed: 0.8,
         zoom: 8,
         curve: 1.3,
         essential: true,
       });
     }
-    else if (routeName === "dashboard-add") {
+    else if (EDIT_PAGES.has(String(routeName))) {
       mapInstance.value.flyTo({
-        center: [newLocationCoords.value.lng, newLocationCoords.value.lat],
+        center: [newLocationCoords.value.long, newLocationCoords.value.lat],
         speed: 0.8,
         zoom: 7,
         curve: 1.3,
@@ -109,8 +97,8 @@ export const useMapStore = defineStore("map", () => {
 
   // 🖱️ Click to set new cords (for Add page)
   function handleOnDoubleClick(mglEvent: any) {
-    const { lng, lat } = mglEvent.event.lngLat;
-    setNewLocationCoords({ lng, lat });
+    const { lng: long, lat } = mglEvent.event.lngLat;
+    setNewLocationCoords({ long, lat });
   }
 
   // 🎨 Map theme
@@ -122,17 +110,14 @@ export const useMapStore = defineStore("map", () => {
 
   return {
     // State
-    activeLocations,
-    activeLocation,
-    hoveredLocation,
+    dataIsLoading,
+    mapPoints,
+    selectedPoint,
+    hoveredPoint,
     newLocationCoords,
     mapStyle,
-    dataIsLoading,
     // Actions
     setMapInstance,
-    setActiveLocations,
-    setActiveLocation,
-    setHoveredLocation,
     setNewLocationCoords,
     handleOnDoubleClick,
   };

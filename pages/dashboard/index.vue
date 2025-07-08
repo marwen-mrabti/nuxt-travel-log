@@ -23,12 +23,18 @@ const locations = computed(() => data.value?.pages.flatMap((page: PaginatedResul
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
 
 const mapStore = useMapStore();
-watch(() => locations.value, (newLocations) => {
-  mapStore.setActiveLocations(newLocations);
-  if (isPending.value)
-    mapStore.dataIsLoading = true;
-  else
-    mapStore.dataIsLoading = false;
+const { mapPoints, dataIsLoading } = storeToRefs(mapStore);
+
+watch([isPending, locations], ([isPending, newLocations]) => {
+  dataIsLoading.value = isPending;
+  mapPoints.value = newLocations.map(location => ({
+    id: location.id,
+    name: location.name,
+    description: location.description,
+    slug: location.slug,
+    lat: location.lat,
+    long: location.long,
+  }));
 }, { immediate: true });
 </script>
 

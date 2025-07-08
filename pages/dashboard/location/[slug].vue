@@ -13,9 +13,19 @@ const { data: location, isPending, isError, error, refetch } = useLocation({ slu
 const errorMessage = computed(() => error.value?.statusMessage || error.value?.data?.message);
 
 const mapStore = useMapStore();
-watch(() => location.value, (newLocation) => {
+const { selectedPoint, dataIsLoading } = storeToRefs(mapStore);
+
+watch([isPending, location], ([isPending, newLocation]) => {
+  dataIsLoading.value = isPending;
   if (newLocation) {
-    mapStore.setActiveLocation(newLocation);
+    selectedPoint.value = {
+      id: newLocation.id,
+      name: newLocation.name,
+      description: newLocation.description,
+      slug: newLocation.slug,
+      lat: newLocation.lat,
+      long: newLocation.long,
+    };
   }
   if (isPending.value)
     mapStore.dataIsLoading = true;
