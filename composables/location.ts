@@ -17,8 +17,6 @@ export function useInfiniteLocations() {
 }
 
 export function useLocation({ slug }: { slug: ComputedRef<string | undefined> }) {
-  if (!slug.value)
-    return;
   return useQuery<T_SelectLocation, FetchError>({
     ...locationQueryOptions.bySlug(slug.value),
     enabled: !!slug,
