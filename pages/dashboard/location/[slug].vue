@@ -27,6 +27,10 @@ watch([isPending, location], ([isPending, newLocation]) => {
       long: newLocation.long,
     };
   }
+  if (isPending.value)
+    mapStore.dataIsLoading = true;
+  else
+    mapStore.dataIsLoading = false;
 }, { immediate: true });
 </script>
 
