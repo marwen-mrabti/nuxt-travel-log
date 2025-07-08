@@ -24,14 +24,14 @@ provide("paginatedLocations", query);
         <NuxtPage />
       </div>
       <div class="h-full w-full flex-1">
-        <AppMapErrorBoundary>
-          <ClientOnly fallback-tag="div">
+        <ClientOnly fallback-tag="div">
+          <AppMapErrorBoundary>
             <template #fallback>
               <AppMapFallback />
             </template>
             <AppMap />
-          </ClientOnly>
-        </AppMapErrorBoundary>
+          </AppMapErrorBoundary>
+        </ClientOnly>
       </div>
     </main>
   </div>
