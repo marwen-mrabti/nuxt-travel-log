@@ -1,6 +1,6 @@
 import { LngLatBounds } from "maplibre-gl";
 import { defineStore } from "pinia";
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref } from "vue";
 
 import type { T_LongLat, T_MapPoint } from "~/lib/types";
 
@@ -18,7 +18,7 @@ export const useMapStore = defineStore("map", () => {
   const newLocationCoords = ref<T_LongLat>(GREENWICH_Coords);
 
   const mapInstance = ref<any>(null);
-  const mapBounds = ref<any>();
+  const mapBounds = ref<LngLatBounds | null>(null);
   const setMapInstance = (map: any) => {
     if (!map)
       return;
@@ -30,7 +30,7 @@ export const useMapStore = defineStore("map", () => {
   };
 
   // 🗺️ Map navigation logic
-  watchEffect(() => {
+  effect(() => {
     if (!mapInstance.value)
       return;
 
@@ -66,12 +66,11 @@ export const useMapStore = defineStore("map", () => {
           [firstPoint.long, firstPoint.lat],
         ));
         mapInstance.value.fitBounds(mapBounds.value, {
-          centre: [firstPoint.long, firstPoint.lat],
           padding: 100,
           duration: 1000,
           maxZoom: 10,
           zoom: 2,
-          curve: 0.8,
+          curve: 1.3,
           essential: true,
         });
       }
