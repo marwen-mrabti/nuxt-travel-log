@@ -8,9 +8,7 @@ import type { PaginatedResult } from "~/lib/db/queries/locations-queries";
 import type { T_SelectLocation } from "~/lib/db/schema";
 
 const queryClient = useQueryClient();
-const mapStore = useMapStore();
 const isSidebarOpen = ref(true);
-const { setHoveredLocation } = mapStore;
 
 const paginatedQuery
 = inject <UseInfiniteQueryReturnType<InfiniteData<PaginatedResult<T_SelectLocation>>, FetchError>>("paginatedLocations");
@@ -32,10 +30,19 @@ function toggleSideBar() {
   localStorage.setItem("isSidebarOpen", isSidebarOpen.value.toString());
 }
 
+const mapStore = useMapStore();
+const { hoveredPoint } = storeToRefs(mapStore);
 const hoverTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 function handleOnMouseEnter(location: T_SelectLocation) {
   hoverTimeout.value = setTimeout(() => {
-    setHoveredLocation(location);
+    hoveredPoint.value = {
+      id: location.id,
+      name: location.name,
+      description: location.description,
+      slug: location.slug,
+      lat: location.lat,
+      long: location.long,
+    };
   }, 750);
 }
 function handleOnMouseLeave() {
@@ -44,7 +51,7 @@ function handleOnMouseLeave() {
     hoverTimeout.value = null;
   }
   hoverTimeout.value = setTimeout(() => {
-    setHoveredLocation(undefined);
+    hoveredPoint.value = null;
   }, 500);
 }
 </script>

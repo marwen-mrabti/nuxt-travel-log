@@ -25,7 +25,7 @@ function formatNumber(value?: number) {
     <LocationForm>
       <div class="flex flex-col items-start justify-around gap-1">
         <p class="text-xs text-gray-400">
-          Current coordinates: {{ formatNumber(coords.lat) }}, {{ formatNumber(coords.lng) }}
+          Current coordinates: {{ formatNumber(coords.long) }}, {{ formatNumber(coords.lat) }}
         </p>
         <p>
           To set the coordinates:

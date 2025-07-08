@@ -8,10 +8,15 @@ function onMapLoad(event: any) {
     mapStore.setMapInstance(event.map);
   }
 }
-const { activeLocations, activeLocation, mapStyle, hoveredLocation, newLocationCoords, dataIsLoading } = storeToRefs(mapStore);
+const { mapPoints, selectedPoint, hoveredPoint, mapStyle, newLocationCoords, dataIsLoading } = storeToRefs(mapStore);
 
 function handleOnDoubleClick(mglEvent: any) {
   mapStore.handleOnDoubleClick(mglEvent);
+}
+
+function updateNewLocationCoords(coords: { lng: number; lat: number }) {
+  newLocationCoords.value.long = coords.lng;
+  newLocationCoords.value.lat = coords.lat;
 }
 
 function handleMapError(error: Error) {
@@ -36,9 +41,9 @@ function handleMapError(error: Error) {
       <MglGeolocateControl />
 
       <!-- Multiple locations markers -->
-      <div v-if="activeLocations?.length && route.name === 'dashboard'">
+      <div v-if="mapPoints.length && route.name === 'dashboard'">
         <MglMarker
-          v-for="loc in activeLocations"
+          v-for="loc in mapPoints"
           :key="loc.id"
           :coordinates="[loc.long, loc.lat]"
         >
@@ -53,9 +58,9 @@ function handleMapError(error: Error) {
               >
                 <Icon
                   name="tabler:map-pin-filled"
-                  :size="loc.slug === hoveredLocation?.slug ? 30 : 24"
+                  :size="loc.slug === hoveredPoint?.slug ? 30 : 24"
                   class="text-error hover:text-red-600 transition-all duration-200 ease-linear"
-                  :class="{ '!text-red-700': loc.slug === hoveredLocation?.slug }"
+                  :class="{ '!text-red-700': loc.slug === hoveredPoint?.slug }"
                 />
               </AppPrefetchLink>
             </div>
@@ -64,15 +69,15 @@ function handleMapError(error: Error) {
       </div>
 
       <!-- Single location marker -->
-      <div v-else-if="activeLocation && route.name === 'dashboard-location-slug'">
+      <div v-else-if="selectedPoint && route.name === 'dashboard-location-slug'">
         <MglMarker
-          :coordinates="[activeLocation.long, activeLocation.lat]"
+          :coordinates="[selectedPoint.long, selectedPoint.lat]"
           :draggable="false"
         >
           <template #marker>
             <div
               class="hover:tooltip tooltip-top tooltip-open hover:cursor-pointer"
-              :data-tip="activeLocation.name"
+              :data-tip="selectedPoint.name"
             >
               <Icon
                 name="tabler:map-pin-filled"
@@ -87,12 +92,13 @@ function handleMapError(error: Error) {
       <!-- New location marker (draggable) -->
       <div v-else>
         <MglMarker
-          v-model:coordinates="newLocationCoords"
-          :draggable="true"
+          :coordinates="[newLocationCoords.long, newLocationCoords.lat]"
+          draggable
           @dragend="newLocationCoords = {
-            lng: newLocationCoords.lng,
+            long: newLocationCoords.long,
             lat: newLocationCoords.lat,
           }"
+          @update:coordinates="updateNewLocationCoords"
         >
           <template #marker>
             <div
